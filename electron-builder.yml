@@ -69,5 +69,5 @@ nsis:
 
 publish:
   provider: github
-  owner: cluttered-dev
+  owner: gatteo
   repo: cluttered

@@ -9,14 +9,14 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/cluttered-dev/cluttered/releases/latest">
-    <img src="https://img.shields.io/github/v/release/cluttered-dev/cluttered?style=flat-square" alt="Latest Release">
+  <a href="https://github.com/gatteo/cluttered/releases/latest">
+    <img src="https://img.shields.io/github/v/release/gatteo/cluttered?style=flat-square" alt="Latest Release">
   </a>
-  <a href="https://github.com/cluttered-dev/cluttered/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/cluttered-dev/cluttered?style=flat-square" alt="License">
+  <a href="https://github.com/gatteo/cluttered/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/gatteo/cluttered?style=flat-square" alt="License">
   </a>
-  <a href="https://github.com/cluttered-dev/cluttered/stargazers">
-    <img src="https://img.shields.io/github/stars/cluttered-dev/cluttered?style=flat-square" alt="Stars">
+  <a href="https://github.com/gatteo/cluttered/stargazers">
+    <img src="https://img.shields.io/github/stars/gatteo/cluttered?style=flat-square" alt="Stars">
   </a>
 </p>
 
@@ -57,12 +57,13 @@ Cluttered finds all these across your machine and lets you clean them safely.
 
 | Ecosystem | Detected By | Cleanable Artifacts |
 |-----------|-------------|---------------------|
-| **Node.js** | `package.json` | `node_modules`, `.next`, `.nuxt`, `dist`, `build` |
-| **Python** | `requirements.txt`, `pyproject.toml` | `__pycache__`, `.venv`, `venv`, `.pytest_cache` |
+| **React Native** | `package.json` + `ios/` or `android/` | `node_modules`, `ios/Pods`, `ios/build`, `android/build`, `.expo` |
+| **Node.js** | `package.json` | `node_modules`, `.next`, `.nuxt`, `dist`, `build`, `.turbo`, `.cache` |
 | **Rust** | `Cargo.toml` | `target/` |
-| **Go** | `go.mod` | `vendor/` |
-| **Xcode** | `*.xcodeproj` | `DerivedData`, `build/` |
+| **iOS / Xcode** | `*.xcodeproj` | `DerivedData`, `build/` |
 | **Android** | `build.gradle` | `build/`, `.gradle` |
+| **Python** | `requirements.txt`, `pyproject.toml` | `__pycache__`, `.venv`, `venv`, `.pytest_cache` |
+| **Go** | `go.mod` | `vendor/` |
 | **Docker** | `Dockerfile` | Detection only |
 | **Ruby** | `Gemfile` | `vendor/bundle` |
 | **PHP** | `composer.json` | `vendor/` |
@@ -74,7 +75,7 @@ Cluttered finds all these across your machine and lets you clean them safely.
 
 ### Download
 
-Download the latest release from [GitHub Releases](https://github.com/cluttered-dev/cluttered/releases/latest).
+Download the latest release from [GitHub Releases](https://github.com/gatteo/cluttered/releases/latest).
 
 - **Apple Silicon (M1/M2/M3)**: `Cluttered-x.x.x-arm64.dmg`
 - **Intel Mac**: `Cluttered-x.x.x-x64.dmg`
@@ -133,7 +134,7 @@ Cluttered protects your work:
 
 ```bash
 # Clone the repository
-git clone https://github.com/cluttered-dev/cluttered.git
+git clone https://github.com/gatteo/cluttered.git
 cd cluttered
 
 # Install dependencies
@@ -175,7 +176,7 @@ We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for gu
 
 ### Ways to Contribute
 
-- Report bugs and request features via [Issues](https://github.com/cluttered-dev/cluttered/issues)
+- Report bugs and request features via [Issues](https://github.com/gatteo/cluttered/issues)
 - Submit pull requests for bug fixes or new features
 - Add support for new ecosystems
 - Improve documentation
