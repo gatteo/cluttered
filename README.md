@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/icons/icon.png" width="128" height="128" alt="Cluttered Logo">
+  <img src="assets/icons/icon-border.png" width="128" height="128" alt="Cluttered Logo">
 </p>
 
 <h1 align="center">Cluttered</h1>
