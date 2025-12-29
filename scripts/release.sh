@@ -19,14 +19,14 @@ echo -e "${YELLOW}=======================================${NC}"
 # Check if tag exists
 if ! git rev-parse "$TAG" >/dev/null 2>&1; then
     echo -e "${RED}Error: Tag $TAG does not exist.${NC}"
-    echo -e "Run 'npm version patch/minor/major' first to create the tag."
+    echo -e "Run 'pnpm version patch/minor/major' first to create the tag."
     exit 1
 fi
 
 # Check if DMG exists
 if [ ! -f "$DMG_PATH" ]; then
     echo -e "${RED}Error: DMG not found at $DMG_PATH${NC}"
-    echo -e "Run 'npm run package:dmg' first to build the DMG."
+    echo -e "Run 'pnpm run package:dmg' first to build the DMG."
     exit 1
 fi
 

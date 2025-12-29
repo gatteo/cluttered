@@ -28,7 +28,7 @@ sudo rm -rf "$MAS_DIR" "$RELEASE_DIR/mas-universal-x64-temp" "$RELEASE_DIR/mas-u
 
 # Step 2: Build the app
 echo -e "\n${GREEN}[2/5] Building app (vite + tsc)...${NC}"
-npm run build
+pnpm run build
 
 # Step 3: Package with electron-builder (app only)
 echo -e "\n${GREEN}[3/5] Packaging universal app with electron-builder...${NC}"

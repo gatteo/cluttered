@@ -106,7 +106,7 @@ fi
 
 # Step 1: Bump version
 echo -e "\n${GREEN}[1/5] Bumping version...${NC}"
-npm version $VERSION_TYPE --no-git-tag-version
+pnpm version $VERSION_TYPE --no-git-tag-version
 NEW_VERSION=$(node -p "require('./package.json').version")
 NEW_TAG="v$NEW_VERSION"
 echo -e "  New version: ${YELLOW}$NEW_VERSION${NC}"

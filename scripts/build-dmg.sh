@@ -26,7 +26,7 @@ rm -f "$RELEASE_DIR"/*.dmg "$RELEASE_DIR"/*.zip 2>/dev/null || true
 
 # Step 2: Build the app
 echo -e "\n${GREEN}[2/6] Building app (vite + tsc)...${NC}"
-npm run build
+pnpm run build
 
 # Step 3: Package with electron-builder
 echo -e "\n${GREEN}[3/6] Packaging universal app with electron-builder...${NC}"

@@ -4,13 +4,13 @@
 
 ```bash
 # Patch release (1.0.0 → 1.0.1) - bug fixes
-npm run publish:patch
+pnpm run publish:patch
 
 # Minor release (1.0.0 → 1.1.0) - new features
-npm run publish:minor
+pnpm run publish:minor
 
 # Major release (1.0.0 → 2.0.0) - breaking changes
-npm run publish:major
+pnpm run publish:major
 ```
 
 This single command will:
@@ -75,13 +75,13 @@ If you prefer to do it step by step:
 
 ### 1. Bump Version
 ```bash
-npm version patch  # or minor/major
+pnpm version patch  # or minor/major
 ```
 
 ### 2. Build Artifacts
 ```bash
-npm run package:dmg  # For GitHub/direct distribution
-npm run package:mas  # For Mac App Store
+pnpm run package:dmg  # For GitHub/direct distribution
+pnpm run package:mas  # For Mac App Store
 ```
 
 ### 3. Push to GitHub
@@ -91,7 +91,7 @@ git push origin main --tags
 
 ### 4. Create GitHub Release
 ```bash
-npm run release
+pnpm run release
 ```
 
 ### 5. Upload to App Store
@@ -107,12 +107,12 @@ npm run release
 
 | Command | Description |
 |---------|-------------|
-| `npm run publish:patch` | Full release (patch version) |
-| `npm run publish:minor` | Full release (minor version) |
-| `npm run publish:major` | Full release (major version) |
-| `npm run package:dmg` | Build signed + notarized DMG only |
-| `npm run package:mas` | Build Mac App Store pkg only |
-| `npm run release` | Create GitHub release (after building) |
+| `pnpm run publish:patch` | Full release (patch version) |
+| `pnpm run publish:minor` | Full release (minor version) |
+| `pnpm run publish:major` | Full release (major version) |
+| `pnpm run package:dmg` | Build signed + notarized DMG only |
+| `pnpm run package:mas` | Build Mac App Store pkg only |
+| `pnpm run release` | Create GitHub release (after building) |
 
 ---
 

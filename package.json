@@ -24,14 +24,14 @@
     "clean my mac"
   ],
   "scripts": {
-    "dev": "concurrently \"npm run dev:renderer\" \"npm run dev:main\"",
+    "dev": "concurrently \"pnpm run dev:renderer\" \"pnpm run dev:main\"",
     "dev:renderer": "vite",
-    "dev:main": "npm run build:main && electron .",
-    "build": "npm run build:renderer && npm run build:main",
+    "dev:main": "pnpm run build:main && electron .",
+    "build": "pnpm run build:renderer && pnpm run build:main",
     "build:renderer": "vite build",
     "build:main": "tsc -p tsconfig.main.json",
-    "package": "npm run build && electron-builder",
-    "package:dir": "npm run build && electron-builder --dir",
+    "package": "pnpm run build && electron-builder",
+    "package:dir": "pnpm run build && electron-builder --dir",
     "package:mas": "./scripts/build-mas.sh",
     "package:dmg": "./scripts/build-dmg.sh",
     "release": "./scripts/release.sh",
@@ -41,17 +41,19 @@
     "lint": "eslint src --ext .ts,.tsx",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist release",
-    "postinstall": "electron-rebuild"
+    "rebuild": "pnpm exec electron-rebuild"
   },
   "dependencies": {
     "better-sqlite3": "^11.6.0",
     "check-disk-space": "^3.4.0",
     "dockerode": "^4.0.2",
+    "dotenv": "^17.2.3",
     "electron-store": "^8.2.0",
     "framer-motion": "^11.15.0",
     "geist": "^1.5.1",
     "glob": "^11.0.0",
     "lucide-react": "^0.562.0",
+    "posthog-node": "^5.18.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "simple-git": "^3.30.0",
@@ -59,6 +61,7 @@
     "zustand": "^5.0.2"
   },
   "devDependencies": {
+    "@electron/rebuild": "^4.0.2",
     "@types/better-sqlite3": "^7.6.12",
     "@types/dockerode": "^3.3.31",
     "@types/node": "^22.10.2",

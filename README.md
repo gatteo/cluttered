@@ -132,7 +132,7 @@ Cluttered protects your work:
 ### Prerequisites
 
 - Node.js 18+
-- pnpm (recommended) or npm
+- pnpm
 
 ### Setup
 
