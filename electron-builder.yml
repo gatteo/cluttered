@@ -40,7 +40,19 @@ mas:
   category: public.app-category.developer-tools
   entitlements: build/entitlements.mas.plist
   entitlementsInherit: build/entitlements.mas.inherit.plist
-  provisioningProfile: build/embedded.provisionprofile  # Add your provisioning profile
+  provisioningProfile: build/embedded.provisionprofile
+  identity: D87DAC0B8EFF9E22B0C8CB13F5E3B55ABF62B352
+  type: distribution
+  target:
+    - target: mas
+      arch:
+        - universal
+
+masDev:
+  identity: "Matteo Giardino (X745HT6K4R)"
+
+pkg:
+  identity: "B82ECD43A06B5CAA596E246FB59E2D6B8C088CA3"
 
 dmg:
   sign: false
