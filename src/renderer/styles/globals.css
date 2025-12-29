@@ -79,8 +79,14 @@
 }
 
 @layer components {
-  /* Glass card styles */
+  /* Glass card styles - blur only for hero/main cards */
   .glass-card {
+    @apply bg-surface-elevated/80 border border-white/[0.08] rounded-2xl;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Use this for hero sections where blur is acceptable */
+  .glass-card-blur {
     @apply bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] rounded-2xl;
     box-shadow:
       0 8px 32px rgba(0, 0, 0, 0.2),
@@ -88,10 +94,8 @@
   }
 
   .glass-card-elevated {
-    @apply bg-white/[0.05] backdrop-blur-2xl border border-white/[0.1] rounded-2xl;
-    box-shadow:
-      0 8px 32px rgba(0, 0, 0, 0.3),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    @apply bg-white/[0.05] border border-white/[0.1] rounded-2xl;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
   }
 
   /* Button styles */
@@ -132,6 +136,20 @@
 
   .btn-ghost {
     @apply text-text-secondary hover:text-white hover:bg-white/5 transition-colors;
+  }
+
+  .btn-subtle {
+    @apply text-text-muted hover:text-white hover:bg-white/5 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5;
+  }
+
+  /* Tooltip styles */
+  .tooltip {
+    @apply bg-surface-elevated border border-white/10 rounded-lg shadow-lg;
+  }
+
+  .tooltip-arrow {
+    border-color: transparent;
+    border-top-color: theme('colors.surface.elevated');
   }
 
   /* Drag region for title bar */

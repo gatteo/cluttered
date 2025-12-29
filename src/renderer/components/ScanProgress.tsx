@@ -88,10 +88,10 @@ export function ScanProgress({ progress, onCancel }: ScanProgressProps) {
       </div>
 
       {/* Cancel button */}
-      <div className="text-center mt-6">
+      <div className="flex justify-center mt-6">
         <button
           onClick={onCancel}
-          className="text-text-muted hover:text-white text-sm transition-colors"
+          className="btn-subtle text-sm"
         >
           Cancel
         </button>

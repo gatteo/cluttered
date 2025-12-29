@@ -41,7 +41,8 @@
     "lint": "eslint src --ext .ts,.tsx",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist release",
-    "rebuild": "pnpm exec electron-rebuild"
+    "rebuild": "pnpm exec electron-rebuild",
+    "reset-db": "rm -f \"$HOME/Library/Application Support/cluttered/cluttered.db\" && echo 'Database reset successfully'"
   },
   "dependencies": {
     "better-sqlite3": "^11.6.0",

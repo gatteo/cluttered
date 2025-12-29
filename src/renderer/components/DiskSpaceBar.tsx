@@ -1,5 +1,4 @@
-import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { formatBytes } from '../utils/format';
 
 interface DiskSpace {
@@ -8,7 +7,7 @@ interface DiskSpace {
   free: number;
 }
 
-export function DiskSpaceBar() {
+export const DiskSpaceBar = memo(function DiskSpaceBar() {
   const [diskSpace, setDiskSpace] = useState<DiskSpace | null>(null);
 
   useEffect(() => {
@@ -27,23 +26,13 @@ export function DiskSpaceBar() {
   };
 
   return (
-    <div>
+    <div className="max-w-[500px] mx-auto">
       {/* Progress bar container */}
       <div className="h-3 bg-surface-interactive rounded-full overflow-hidden relative">
         {/* Used space */}
-        <motion.div
-          className={`h-full bg-gradient-to-r ${getBarColor(usedPercent)} rounded-full`}
-          initial={{ width: 0 }}
-          animate={{ width: `${usedPercent}%` }}
-          transition={{ duration: 1, ease: 'easeOut' }}
-        />
-
-        {/* Glow effect */}
-        <motion.div
-          className="absolute top-0 h-full w-20 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-          initial={{ left: '-20%' }}
-          animate={{ left: '120%' }}
-          transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+        <div
+          className={`h-full bg-gradient-to-r ${getBarColor(usedPercent)} rounded-full transition-all duration-1000 ease-out`}
+          style={{ width: `${usedPercent}%` }}
         />
       </div>
 
@@ -58,7 +47,7 @@ export function DiskSpaceBar() {
       </div>
     </div>
   );
-}
+});
 
 function DiskSpaceBarSkeleton() {
   return (

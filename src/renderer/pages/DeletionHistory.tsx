@@ -45,15 +45,13 @@ export function DeletionHistory() {
 
       <div className="px-8 py-6 border-b border-white/5">
         <div className="flex items-center gap-4">
-          <motion.button
+          <button
             onClick={goBack}
-            className="btn-ghost p-2 rounded-lg flex items-center gap-1.5"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            className="btn-subtle text-sm"
           >
             <ArrowLeft size={16} />
             Back
-          </motion.button>
+          </button>
 
           <h1 className="text-2xl font-bold text-white">Deletion History</h1>
         </div>

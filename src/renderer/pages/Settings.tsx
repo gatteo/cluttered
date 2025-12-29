@@ -62,11 +62,11 @@ export function Settings() {
         {/* Sidebar */}
         <div className='w-56 bg-surface-primary border-r border-white/5 p-4 flex flex-col'>
           <button
-            className='btn-ghost px-3 py-2 rounded-lg mb-4 flex items-center gap-2 text-text-secondary hover:text-white'
+            className='btn-subtle text-sm mb-4'
             onClick={goBack}
           >
             <ArrowLeft size={16} />
-            <span>Back</span>
+            Back
           </button>
 
           <nav className='space-y-1 flex-1'>

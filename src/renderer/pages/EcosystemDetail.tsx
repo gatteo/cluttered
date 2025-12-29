@@ -27,42 +27,40 @@ function ProtectedProjectModal({
       onClick={onCancel}
     >
       <motion.div
-        className="glass-card p-6 max-w-md mx-4"
+        className="glass-card p-6 max-w-md mx-4 text-center"
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-start gap-4">
+        <div className="flex justify-center mb-4">
           <div className="p-3 rounded-full bg-amber-500/20">
             <AlertTriangle className="text-amber-400" size={24} />
           </div>
-          <div className="flex-1">
-            <h3 className="text-lg font-semibold text-white mb-2">
-              Select Protected Project?
-            </h3>
-            <p className="text-text-secondary text-sm mb-4">
-              <span className="text-white font-medium">{project.name}</span> has uncommitted git changes.
-              Cleaning this project will permanently delete your unsaved work.
-            </p>
-            <p className="text-text-muted text-xs mb-4">
-              {project.path}
-            </p>
-            <div className="flex gap-3">
-              <button
-                onClick={onCancel}
-                className="btn-ghost px-4 py-2 rounded-lg text-sm flex-1"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={onConfirm}
-                className="bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 px-4 py-2 rounded-lg text-sm flex-1 transition-colors"
-              >
-                Select Anyway
-              </button>
-            </div>
-          </div>
+        </div>
+        <h3 className="text-lg font-semibold text-white mb-2">
+          Select Protected Project?
+        </h3>
+        <p className="text-text-secondary text-sm mb-4">
+          <span className="text-white font-medium">{project.name}</span> has uncommitted git changes.
+          Cleaning this project will permanently delete your unsaved work.
+        </p>
+        <p className="text-text-muted text-xs mb-4">
+          {project.path}
+        </p>
+        <div className="flex gap-3">
+          <button
+            onClick={onCancel}
+            className="btn-ghost px-4 py-2 rounded-lg text-sm flex-1"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            className="bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 px-4 py-2 rounded-lg text-sm flex-1 transition-colors"
+          >
+            Select Anyway
+          </button>
         </div>
       </motion.div>
     </motion.div>
@@ -84,14 +82,14 @@ function Tooltip({ children, content }: { children: React.ReactNode; content: st
       <AnimatePresence>
         {isVisible && (
           <motion.div
-            className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 text-xs text-white bg-gray-900 rounded-lg shadow-lg whitespace-nowrap"
+            className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 text-xs text-white tooltip whitespace-nowrap"
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 4 }}
             transition={{ duration: 0.15 }}
           >
             {content}
-            <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900" />
+            <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 tooltip-arrow" />
           </motion.div>
         )}
       </AnimatePresence>
@@ -220,21 +218,19 @@ export function EcosystemDetail({ ecosystem }: EcosystemDetailProps) {
       {/* Header */}
       <div className="px-8 py-6 border-b border-white/5">
         <div className="flex items-center gap-4">
-          <motion.button
+          <button
             onClick={goBack}
-            className="btn-ghost p-2 rounded-lg flex items-center gap-1.5"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            className="btn-subtle text-sm"
           >
             <ArrowLeft size={16} />
             Back
-          </motion.button>
+          </button>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             {config.iconImage ? (
-              <img src={config.iconImage} alt={config.name} className="w-10 h-10 object-contain" />
+              <img src={config.iconImage} alt={config.name} className="w-14 h-14 object-contain" />
             ) : (
-              <span className="text-4xl">{config.icon}</span>
+              <span className="text-5xl">{config.icon}</span>
             )}
             <div>
               <h1 className="text-2xl font-bold text-white">{config.name}</h1>
@@ -255,7 +251,7 @@ export function EcosystemDetail({ ecosystem }: EcosystemDetailProps) {
             {someSelected && (
               <button
                 onClick={handleDeselectAll}
-                className="text-text-secondary hover:text-white text-sm"
+                className="btn-subtle text-sm"
               >
                 Deselect All
               </button>
@@ -263,7 +259,7 @@ export function EcosystemDetail({ ecosystem }: EcosystemDetailProps) {
             {!allSelected && filteredProjects.some(p => !p.isProtected) && (
               <button
                 onClick={handleSelectAll}
-                className="text-text-secondary hover:text-white text-sm"
+                className="btn-subtle text-sm"
               >
                 Select All Cleanable
               </button>
@@ -339,7 +335,7 @@ export function EcosystemDetail({ ecosystem }: EcosystemDetailProps) {
                   setShowEmpty(false);
                   setStatusFilters(new Set(allStatuses));
                 }}
-                className="text-text-muted hover:text-white text-xs flex items-center gap-1"
+                className="btn-subtle text-xs"
               >
                 <X size={12} />
                 Reset
