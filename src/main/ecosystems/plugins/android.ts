@@ -1,18 +1,18 @@
-import { BaseEcosystemPlugin } from '../base';
-import { join } from 'path';
-import { homedir } from 'os';
+import { BaseEcosystemPlugin } from '../base'
+import { join } from 'path'
+import { homedir } from 'os'
 
 export interface GlobalCleanablePath {
-  path: string;
-  description: string;
+  path: string
+  description: string
 }
 
 export class AndroidPlugin extends BaseEcosystemPlugin {
-  id = 'android';
-  name = 'Android';
-  icon = '🤖';
-  color = '#3DDC84';
-  detectionFiles = ['build.gradle', 'build.gradle.kts', 'settings.gradle', 'settings.gradle.kts'];
+  id = 'android'
+  name = 'Android'
+  icon = '🤖'
+  color = '#3DDC84'
+  detectionFiles = ['build.gradle', 'build.gradle.kts', 'settings.gradle', 'settings.gradle.kts']
   cleanablePatterns = [
     {
       pattern: 'build',
@@ -49,7 +49,7 @@ export class AndroidPlugin extends BaseEcosystemPlugin {
       description: 'Local SDK path',
       alwaysSafe: true,
     },
-  ];
+  ]
 
   // Global Gradle cache
   globalCleanablePaths: GlobalCleanablePath[] = [
@@ -61,7 +61,7 @@ export class AndroidPlugin extends BaseEcosystemPlugin {
       path: join(homedir(), '.gradle/wrapper/dists'),
       description: 'Gradle wrapper distributions',
     },
-  ];
+  ]
 }
 
-export const androidPlugin = new AndroidPlugin();
+export const androidPlugin = new AndroidPlugin()

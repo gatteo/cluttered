@@ -1,19 +1,19 @@
-import { BaseEcosystemPlugin } from '../base';
-import { join } from 'path';
-import { access, readdir } from 'fs/promises';
-import { homedir } from 'os';
+import { BaseEcosystemPlugin } from '../base'
+import { join } from 'path'
+import { access, readdir } from 'fs/promises'
+import { homedir } from 'os'
 
 export interface GlobalCleanablePath {
-  path: string;
-  description: string;
+  path: string
+  description: string
 }
 
 export class XcodePlugin extends BaseEcosystemPlugin {
-  id = 'xcode';
-  name = 'iOS / Xcode';
-  icon = '🍎';
-  color = '#007AFF';
-  detectionFiles = ['Package.swift', 'Podfile', 'Podfile.lock'];
+  id = 'xcode'
+  name = 'iOS / Xcode'
+  icon = '🍎'
+  color = '#007AFF'
+  detectionFiles = ['Package.swift', 'Podfile', 'Podfile.lock']
   cleanablePatterns = [
     {
       pattern: 'Pods',
@@ -50,7 +50,7 @@ export class XcodePlugin extends BaseEcosystemPlugin {
       description: 'Workspace user data',
       alwaysSafe: true,
     },
-  ];
+  ]
 
   // Global Xcode caches (not per-project)
   globalCleanablePaths: GlobalCleanablePath[] = [
@@ -70,34 +70,31 @@ export class XcodePlugin extends BaseEcosystemPlugin {
       path: join(homedir(), 'Library/Developer/CoreSimulator/Caches'),
       description: 'Simulator Caches',
     },
-  ];
+  ]
 
   async detect(projectPath: string): Promise<boolean> {
     // Check for Package.swift (Swift Package)
     try {
-      await access(join(projectPath, 'Package.swift'));
-      return true;
+      await access(join(projectPath, 'Package.swift'))
+      return true
     } catch {
       // Continue checking
     }
 
     // Check for .xcodeproj or .xcworkspace directories
     try {
-      const entries = await readdir(projectPath, { withFileTypes: true });
+      const entries = await readdir(projectPath, { withFileTypes: true })
       for (const entry of entries) {
-        if (
-          entry.isDirectory() &&
-          (entry.name.endsWith('.xcodeproj') || entry.name.endsWith('.xcworkspace'))
-        ) {
-          return true;
+        if (entry.isDirectory() && (entry.name.endsWith('.xcodeproj') || entry.name.endsWith('.xcworkspace'))) {
+          return true
         }
       }
     } catch {
       // Can't read directory
     }
 
-    return false;
+    return false
   }
 }
 
-export const xcodePlugin = new XcodePlugin();
+export const xcodePlugin = new XcodePlugin()

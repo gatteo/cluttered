@@ -1,28 +1,28 @@
-import { v4 as uuid } from 'uuid';
-import { BaseService } from './base';
-import { CleanOptions, CleanProgress, CleanResult, Project, DeletionLogEntry } from '../../shared/types';
-import { ecosystemRegistry } from '../ecosystems';
-import { deletionLogRepo } from '../database/repositories/deletionLog';
-import { statisticsRepo } from '../database/repositories/statistics';
-import { ProtectionAnalyzer } from './protectionAnalyzer';
+import { v4 as uuid } from 'uuid'
+import { BaseService } from './base'
+import { CleanOptions, CleanProgress, CleanResult, Project, DeletionLogEntry } from '../../shared/types'
+import { ecosystemRegistry } from '../ecosystems'
+import { deletionLogRepo } from '../database/repositories/deletionLog'
+import { statisticsRepo } from '../database/repositories/statistics'
+import { ProtectionAnalyzer } from './protectionAnalyzer'
 
 export class CleanerService extends BaseService {
-  private protectionAnalyzer: ProtectionAnalyzer;
-  private isCleaning = false;
-  private shouldCancel = false;
+  private protectionAnalyzer: ProtectionAnalyzer
+  private isCleaning = false
+  private shouldCancel = false
 
   constructor(protectedPaths: string[] = []) {
-    super();
-    this.protectionAnalyzer = new ProtectionAnalyzer(protectedPaths);
+    super()
+    this.protectionAnalyzer = new ProtectionAnalyzer(protectedPaths)
   }
 
   async clean(projects: Project[], options: CleanOptions): Promise<CleanResult> {
     if (this.isCleaning) {
-      throw new Error('Cleaning already in progress');
+      throw new Error('Cleaning already in progress')
     }
 
-    this.isCleaning = true;
-    this.shouldCancel = false;
+    this.isCleaning = true
+    this.shouldCancel = false
 
     const result: CleanResult = {
       success: true,
@@ -30,22 +30,22 @@ export class CleanerService extends BaseService {
       filesDeleted: 0,
       projectsCleaned: [],
       errors: [],
-    };
+    }
 
     try {
       for (let i = 0; i < projects.length; i++) {
-        if (this.shouldCancel) break;
+        if (this.shouldCancel) break
 
-        const project = projects[i];
+        const project = projects[i]
 
         // Double-check protection
-        const protection = await this.protectionAnalyzer.analyze(project.path);
+        const protection = await this.protectionAnalyzer.analyze(project.path)
         if (protection.isProtected) {
           result.errors.push({
             projectId: project.id,
             error: `Protected: ${protection.reasons.join(', ')}`,
-          });
-          continue;
+          })
+          continue
         }
 
         this.sendProgress({
@@ -54,68 +54,65 @@ export class CleanerService extends BaseService {
           totalProjects: projects.length,
           bytesFreed: result.bytesFreed,
           filesDeleted: result.filesDeleted,
-        });
+        })
 
         try {
-          const cleanResult = await this.cleanProject(project, options);
+          const cleanResult = await this.cleanProject(project, options)
 
-          result.bytesFreed += cleanResult.bytesFreed;
-          result.filesDeleted += cleanResult.filesDeleted;
-          result.projectsCleaned.push(project.id);
+          result.bytesFreed += cleanResult.bytesFreed
+          result.filesDeleted += cleanResult.filesDeleted
+          result.projectsCleaned.push(project.id)
 
           // Log deletion for restore capability
           if (!options.dryRun) {
-            await this.logDeletion(project, cleanResult.artifacts);
+            await this.logDeletion(project, cleanResult.artifacts)
           }
         } catch (error) {
           result.errors.push({
             projectId: project.id,
             error: String(error),
-          });
+          })
         }
       }
 
       // Update statistics
       if (!options.dryRun && result.bytesFreed > 0) {
-        statisticsRepo.recordCleanup(result.bytesFreed, result.projectsCleaned.length);
+        statisticsRepo.recordCleanup(result.bytesFreed, result.projectsCleaned.length)
       }
 
-      return result;
+      return result
     } finally {
-      this.isCleaning = false;
+      this.isCleaning = false
     }
   }
 
-  private async cleanProject(
-    project: Project,
-    options: CleanOptions
-  ): Promise<{ bytesFreed: number; filesDeleted: number; artifacts: string[] }> {
-    const plugin = ecosystemRegistry.get(project.ecosystem);
+  private async cleanProject(project: Project, options: CleanOptions): Promise<{ bytesFreed: number; filesDeleted: number; artifacts: string[] }> {
+    const plugin = ecosystemRegistry.get(project.ecosystem)
     if (!plugin) {
-      throw new Error(`Unknown ecosystem: ${project.ecosystem}`);
+      throw new Error(`Unknown ecosystem: ${project.ecosystem}`)
     }
 
     if (options.dryRun) {
       // Just return what would be cleaned
-      const { totalSize, artifacts } = await plugin.calculateSize(project.path);
+      const { totalSize, artifacts } = await plugin.calculateSize(project.path)
       return {
         bytesFreed: totalSize,
         filesDeleted: artifacts.length,
         artifacts: artifacts.map((a) => a.path),
-      };
+      }
     }
 
     // Actually clean
     const cleanResult = await plugin.clean(project.path, {
       dryRun: false,
       moveToTrash: options.moveToTrash,
-    });
+    })
 
     return {
       bytesFreed: cleanResult.bytesFreed,
       filesDeleted: cleanResult.filesDeleted,
       artifacts: project.artifacts.map((a) => a.path),
-    };
+    }
   }
 
   private async logDeletion(project: Project, artifactPaths: string[]) {
@@ -127,22 +124,22 @@ export class CleanerService extends BaseService {
       ecosystem: project.ecosystem,
       artifacts: artifactPaths,
       totalSize: project.totalSize,
-    };
+    }
 
-    deletionLogRepo.add(entry);
+    deletionLogRepo.add(entry)
   }
 
   private sendProgress(progress: CleanProgress) {
-    this.sendToRenderer('clean:progress', progress);
+    this.sendToRenderer('clean:progress', progress)
   }
 
   cancel() {
-    this.shouldCancel = true;
+    this.shouldCancel = true
   }
 
   updateProtectedPaths(paths: string[]) {
-    this.protectionAnalyzer.updateProtectedPaths(paths);
+    this.protectionAnalyzer.updateProtectedPaths(paths)
   }
 }
 
-export const cleanerService = new CleanerService();
+export const cleanerService = new CleanerService()

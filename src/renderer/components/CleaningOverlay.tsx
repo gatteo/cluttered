@@ -1,25 +1,25 @@
-import { motion, AnimatePresence } from 'framer-motion';
-import { Trash2, Sparkles, Camera, Music, Film, Smartphone, Zap } from 'lucide-react';
-import { useCleanStore } from '../store/cleanStore';
-import { formatBytes } from '../utils/format';
-import { AnimatedNumber } from './AnimatedNumber';
-import { ConfettiEffect } from './ConfettiEffect';
+import { motion, AnimatePresence } from 'framer-motion'
+import { Trash2, Sparkles, Camera, Music, Film, Smartphone, Zap } from 'lucide-react'
+import { useCleanStore } from '../store/cleanStore'
+import { formatBytes } from '../utils/format'
+import { AnimatedNumber } from './AnimatedNumber'
+import { ConfettiEffect } from './ConfettiEffect'
 
 function getFunComparison(bytes: number): { text: string; icon: typeof Camera } {
-  const gb = bytes / (1024 * 1024 * 1024);
-  const mb = bytes / (1024 * 1024);
+  const gb = bytes / (1024 * 1024 * 1024)
+  const mb = bytes / (1024 * 1024)
 
-  if (gb > 50) return { text: `That's like ${Math.round(gb * 200)} photos!`, icon: Camera };
-  if (gb > 10) return { text: `That's equivalent to ${Math.round(gb * 250)} songs!`, icon: Music };
-  if (gb > 1) return { text: `That's about ${Math.round(gb * 2)} HD movies!`, icon: Film };
-  if (mb > 500) return { text: `That's ${Math.round(mb / 5)} apps worth of space!`, icon: Smartphone };
-  return { text: `Every megabyte counts!`, icon: Zap };
+  if (gb > 50) return { text: `That's like ${Math.round(gb * 200)} photos!`, icon: Camera }
+  if (gb > 10) return { text: `That's equivalent to ${Math.round(gb * 250)} songs!`, icon: Music }
+  if (gb > 1) return { text: `That's about ${Math.round(gb * 2)} HD movies!`, icon: Film }
+  if (mb > 500) return { text: `That's ${Math.round(mb / 5)} apps worth of space!`, icon: Smartphone }
+  return { text: `Every megabyte counts!`, icon: Zap }
 }
 
 export function CleaningOverlay() {
-  const { isCleaning, isComplete, progress, result, reset } = useCleanStore();
+  const { isCleaning, isComplete, progress, result, reset } = useCleanStore()
 
-  if (!isCleaning && !isComplete) return null;
+  if (!isCleaning && !isComplete) return null
 
   return (
     <AnimatePresence>
@@ -52,9 +52,7 @@ export function CleaningOverlay() {
               {/* Progress text */}
               <div>
                 <h2 className="text-3xl font-bold text-white mb-2">Cleaning...</h2>
-                <p className="text-text-secondary truncate">
-                  {progress?.currentProject || 'Preparing...'}
-                </p>
+                <p className="text-text-secondary truncate">{progress?.currentProject || 'Preparing...'}</p>
               </div>
 
               {/* Progress bar */}
@@ -80,23 +78,14 @@ export function CleaningOverlay() {
               </div>
 
               {/* File counter */}
-              <motion.div
-                className="text-xl text-accent-green"
-                animate={{ scale: [1, 1.1, 1] }}
-                transition={{ repeat: Infinity, duration: 0.3 }}
-              >
+              <motion.div className="text-xl text-accent-green" animate={{ scale: [1, 1.1, 1] }} transition={{ repeat: Infinity, duration: 0.3 }}>
                 <AnimatedNumber value={progress?.filesDeleted || 0} /> files removed
               </motion.div>
             </div>
           )}
 
           {isComplete && result && (
-            <motion.div
-              className="space-y-6"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: 'spring', damping: 10 }}
-            >
+            <motion.div className="space-y-6" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', damping: 10 }}>
               {/* Success icon */}
               <motion.div
                 className="w-24 h-24 mx-auto rounded-2xl bg-gradient-to-br from-accent-green to-emerald-400 flex items-center justify-center"
@@ -108,11 +97,7 @@ export function CleaningOverlay() {
               </motion.div>
 
               {/* Main stat */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-              >
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
                 <div className="text-6xl font-bold bg-gradient-to-r from-accent-green to-emerald-400 bg-clip-text text-transparent">
                   {formatBytes(result.bytesFreed)}
                 </div>
@@ -127,14 +112,14 @@ export function CleaningOverlay() {
                 transition={{ delay: 0.6 }}
               >
                 {(() => {
-                  const comparison = getFunComparison(result.bytesFreed);
-                  const Icon = comparison.icon;
+                  const comparison = getFunComparison(result.bytesFreed)
+                  const Icon = comparison.icon
                   return (
                     <>
                       <Icon size={18} />
                       {comparison.text}
                     </>
-                  );
+                  )
                 })()}
               </motion.p>
 
@@ -172,5 +157,5 @@ export function CleaningOverlay() {
         </motion.div>
       </motion.div>
     </AnimatePresence>
-  );
+  )
 }

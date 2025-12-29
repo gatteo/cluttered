@@ -1,11 +1,11 @@
-import { BaseEcosystemPlugin } from '../base';
+import { BaseEcosystemPlugin } from '../base'
 
 export class JavaPlugin extends BaseEcosystemPlugin {
-  id = 'java';
-  name = 'Java';
-  icon = '☕';
-  color = '#ED8B00';
-  detectionFiles = ['pom.xml', 'build.gradle', 'build.gradle.kts'];
+  id = 'java'
+  name = 'Java'
+  icon = '☕'
+  color = '#ED8B00'
+  detectionFiles = ['pom.xml', 'build.gradle', 'build.gradle.kts']
   cleanablePatterns = [
     {
       pattern: 'target',
@@ -27,7 +27,7 @@ export class JavaPlugin extends BaseEcosystemPlugin {
       description: 'IntelliJ output',
       alwaysSafe: true,
     },
-  ];
+  ]
 }
 
-export const javaPlugin = new JavaPlugin();
+export const javaPlugin = new JavaPlugin()

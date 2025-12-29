@@ -1,30 +1,25 @@
-import { motion, AnimatePresence } from 'framer-motion';
-import { AlertTriangle, Trash2 } from 'lucide-react';
-import { formatBytes } from '../utils/format';
+import { motion, AnimatePresence } from 'framer-motion'
+import { AlertTriangle, Trash2 } from 'lucide-react'
+import { formatBytes } from '../utils/format'
 
 interface Project {
-  id: string;
-  name: string;
-  status: 'active' | 'recent' | 'stale' | 'dormant';
-  totalSize: number;
+  id: string
+  name: string
+  status: 'active' | 'recent' | 'stale' | 'dormant'
+  totalSize: number
 }
 
 interface ConfirmCleanDialogProps {
-  isOpen: boolean;
-  projects: Project[];
-  onConfirm: () => void;
-  onCancel: () => void;
+  isOpen: boolean
+  projects: Project[]
+  onConfirm: () => void
+  onCancel: () => void
 }
 
-export function ConfirmCleanDialog({
-  isOpen,
-  projects,
-  onConfirm,
-  onCancel,
-}: ConfirmCleanDialogProps) {
-  const recentProjects = projects.filter((p) => p.status === 'recent');
-  const hasRecentProjects = recentProjects.length > 0;
-  const totalSize = projects.reduce((sum, p) => sum + p.totalSize, 0);
+export function ConfirmCleanDialog({ isOpen, projects, onConfirm, onCancel }: ConfirmCleanDialogProps) {
+  const recentProjects = projects.filter((p) => p.status === 'recent')
+  const hasRecentProjects = recentProjects.length > 0
+  const totalSize = projects.reduce((sum, p) => sum + p.totalSize, 0)
 
   return (
     <AnimatePresence>
@@ -36,10 +31,7 @@ export function ConfirmCleanDialog({
           exit={{ opacity: 0 }}
         >
           {/* Backdrop */}
-          <div
-            className="absolute inset-0 bg-void/80 backdrop-blur-sm"
-            onClick={onCancel}
-          />
+          <div className="absolute inset-0 bg-void/80 backdrop-blur-sm" onClick={onCancel} />
 
           {/* Dialog */}
           <motion.div
@@ -55,8 +47,7 @@ export function ConfirmCleanDialog({
 
             <p className="text-text-secondary mb-4">
               You are about to clean <strong>{projects.length}</strong> project
-              {projects.length !== 1 ? 's' : ''}, freeing up{' '}
-              <strong className="text-accent-green">{formatBytes(totalSize)}</strong>.
+              {projects.length !== 1 ? 's' : ''}, freeing up <strong className="text-accent-green">{formatBytes(totalSize)}</strong>.
             </p>
 
             {/* Warning for recent projects */}
@@ -70,17 +61,13 @@ export function ConfirmCleanDialog({
                   {recentProjects.slice(0, 3).map((p) => (
                     <li key={p.id}>• {p.name}</li>
                   ))}
-                  {recentProjects.length > 3 && (
-                    <li>• ...and {recentProjects.length - 3} more</li>
-                  )}
+                  {recentProjects.length > 3 && <li>• ...and {recentProjects.length - 3} more</li>}
                 </ul>
               </div>
             )}
 
             {/* Info about trash */}
-            <p className="text-text-muted text-sm mb-6">
-              Files will be moved to Trash and can be restored if needed.
-            </p>
+            <p className="text-text-muted text-sm mb-6">Files will be moved to Trash and can be restored if needed.</p>
 
             {/* Buttons */}
             <div className="flex gap-3 justify-end">
@@ -95,5 +82,5 @@ export function ConfirmCleanDialog({
         </motion.div>
       )}
     </AnimatePresence>
-  );
+  )
 }

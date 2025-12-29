@@ -181,21 +181,14 @@ export const cleanerHandlers = {
 
       // Track cleanup completed (only if not dry run)
       if (!options.dryRun) {
-        analyticsService.trackCleanupCompleted(
-          result.projectsCleaned.length,
-          result.bytesFreed,
-          Date.now() - cleanStartTime
-        )
+        analyticsService.trackCleanupCompleted(result.projectsCleaned.length, result.bytesFreed, Date.now() - cleanStartTime)
       }
 
       console.log('[Cleaner] Final result being returned:', result)
       return result
     } catch (error) {
       // Track cleanup failed
-      analyticsService.trackCleanupFailed(
-        error instanceof Error ? error.name : 'UnknownError',
-        options.projectIds.length
-      )
+      analyticsService.trackCleanupFailed(error instanceof Error ? error.name : 'UnknownError', options.projectIds.length)
       throw error
     } finally {
       isCleaning = false

@@ -1,42 +1,38 @@
-import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
-import { Sparkles, Trash2, Calendar, Zap } from 'lucide-react';
-import { formatBytes, formatRelativeTime } from '../utils/format';
-import { AnimatedNumber } from './AnimatedNumber';
+import { motion } from 'framer-motion'
+import { useEffect, useState } from 'react'
+import { Sparkles, Trash2, Calendar, Zap } from 'lucide-react'
+import { formatBytes, formatRelativeTime } from '../utils/format'
+import { AnimatedNumber } from './AnimatedNumber'
 
 interface Statistics {
-  totalBytesFreed: number;
-  totalProjectsCleaned: number;
-  largestCleanup: number;
-  cleanupCount: number;
-  lastCleanupDate?: Date;
+  totalBytesFreed: number
+  totalProjectsCleaned: number
+  largestCleanup: number
+  cleanupCount: number
+  lastCleanupDate?: Date
 }
 
 interface HeroStatsProps {
-  totalRecoverable: number;
-  projectCount: number;
+  totalRecoverable: number
+  projectCount: number
 }
 
 export function HeroStats({ totalRecoverable, projectCount }: HeroStatsProps) {
-  const [stats, setStats] = useState<Statistics | null>(null);
+  const [stats, setStats] = useState<Statistics | null>(null)
 
   useEffect(() => {
-    window.electronAPI.getStatistics().then(setStats);
-  }, []);
+    window.electronAPI.getStatistics().then(setStats)
+  }, [])
 
-  const hasResults = totalRecoverable > 0;
-  const hasHistory = stats && stats.totalBytesFreed > 0;
+  const hasResults = totalRecoverable > 0
+  const hasHistory = stats && stats.totalBytesFreed > 0
 
   return (
     <div className="text-center py-4">
       {hasResults ? (
         // Scan results view
         <>
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5, ease: 'easeOut' }}
-          >
+          <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.5, ease: 'easeOut' }}>
             <div className="text-7xl font-bold mb-2">
               <AnimatedNumber
                 value={totalRecoverable}
@@ -45,8 +41,7 @@ export function HeroStats({ totalRecoverable, projectCount }: HeroStatsProps) {
               />
             </div>
             <p className="text-text-secondary text-lg">
-              recoverable across <span className="text-white font-medium">{projectCount}</span>{' '}
-              projects
+              recoverable across <span className="text-white font-medium">{projectCount}</span> projects
             </p>
           </motion.div>
 
@@ -103,11 +98,7 @@ export function HeroStats({ totalRecoverable, projectCount }: HeroStatsProps) {
         </>
       ) : (
         // Empty state - no scan results yet
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
           {hasHistory ? (
             // User has cleaned before
             <>
@@ -156,7 +147,7 @@ export function HeroStats({ totalRecoverable, projectCount }: HeroStatsProps) {
                   className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-accent-purple/20 to-accent-green/20 mb-4"
                   animate={{
                     rotate: [0, 5, -5, 0],
-                    scale: [1, 1.05, 1]
+                    scale: [1, 1.05, 1],
                   }}
                   transition={{ duration: 3, repeat: Infinity }}
                 >
@@ -180,5 +171,5 @@ export function HeroStats({ totalRecoverable, projectCount }: HeroStatsProps) {
         </motion.div>
       )}
     </div>
-  );
+  )
 }

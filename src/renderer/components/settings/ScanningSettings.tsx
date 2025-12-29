@@ -5,10 +5,10 @@ export function ScanningSettings() {
   const { settings, updateSettings } = useSettingsStore()
 
   return (
-    <div className='space-y-6 max-w-xl'>
-      <h2 className='text-xl font-bold'>Scanning Settings</h2>
+    <div className="space-y-6 max-w-xl">
+      <h2 className="text-xl font-bold">Scanning Settings</h2>
 
-      <SettingsSection title='Directories to Scan' description='Cluttered will look for projects in these directories'>
+      <SettingsSection title="Directories to Scan" description="Cluttered will look for projects in these directories">
         <PathListManager
           paths={settings.scanning.scanPaths}
           onChange={(paths) =>
@@ -16,11 +16,11 @@ export function ScanningSettings() {
               scanning: { scanPaths: paths },
             })
           }
-          placeholder='Add directory to scan...'
+          placeholder="Add directory to scan..."
         />
       </SettingsSection>
 
-      <SettingsSection title='Excluded Directories' description='These directories will be skipped during scanning'>
+      <SettingsSection title="Excluded Directories" description="These directories will be skipped during scanning">
         <PathListManager
           paths={settings.scanning.excludePaths}
           onChange={(paths) =>
@@ -28,11 +28,11 @@ export function ScanningSettings() {
               scanning: { excludePaths: paths },
             })
           }
-          placeholder='Add directory to exclude...'
+          placeholder="Add directory to exclude..."
         />
       </SettingsSection>
 
-      <SettingsSection title='Protected Paths' description='Projects in these directories will never be cleaned'>
+      <SettingsSection title="Protected Paths" description="Projects in these directories will never be cleaned">
         <PathListManager
           paths={settings.scanning.protectedPaths}
           onChange={(paths) =>
@@ -40,14 +40,14 @@ export function ScanningSettings() {
               scanning: { protectedPaths: paths },
             })
           }
-          placeholder='Add protected path...'
+          placeholder="Add protected path..."
         />
       </SettingsSection>
 
-      <SettingsSection title='Advanced'>
+      <SettingsSection title="Advanced">
         <SettingsToggle
-          label='Follow symbolic links'
-          description='Include symlinked directories in scans (may slow down scanning)'
+          label="Follow symbolic links"
+          description="Include symlinked directories in scans (may slow down scanning)"
           value={settings.scanning.followSymlinks}
           onChange={(value) =>
             updateSettings({

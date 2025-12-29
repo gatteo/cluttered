@@ -16,31 +16,31 @@ export function GeneralSettings() {
   }
 
   return (
-    <div className='space-y-6 max-w-xl'>
-      <h2 className='text-xl font-bold'>General Settings</h2>
+    <div className="space-y-6 max-w-xl">
+      <h2 className="text-xl font-bold">General Settings</h2>
 
-      <SettingsSection title='Startup'>
+      <SettingsSection title="Startup">
         <SettingsToggle
-          label='Start Cluttered at login'
-          description='Automatically launch when you log in to your Mac'
+          label="Start Cluttered at login"
+          description="Automatically launch when you log in to your Mac"
           value={settings.general.startAtLogin}
           onChange={(value) => updateSettings({ general: { startAtLogin: value } })}
         />
       </SettingsSection>
 
-      <SettingsSection title='Updates'>
+      <SettingsSection title="Updates">
         <SettingsToggle
-          label='Check for updates automatically'
-          description='Notify when a new version is available'
+          label="Check for updates automatically"
+          description="Notify when a new version is available"
           value={settings.general.checkForUpdates}
           onChange={(value) => updateSettings({ general: { checkForUpdates: value } })}
         />
       </SettingsSection>
 
-      <SettingsSection title='Privacy'>
+      <SettingsSection title="Privacy">
         <SettingsToggle
-          label='Send anonymous usage statistics'
-          description='Help improve Cluttered by sharing anonymous data'
+          label="Send anonymous usage statistics"
+          description="Help improve Cluttered by sharing anonymous data"
           value={settings.general.sendAnalytics}
           onChange={(value) => {
             updateSettings({ general: { sendAnalytics: value } })
@@ -49,9 +49,9 @@ export function GeneralSettings() {
         />
       </SettingsSection>
 
-      <SettingsSection title='Appearance'>
+      <SettingsSection title="Appearance">
         <SettingsSelect
-          label='Theme'
+          label="Theme"
           value={settings.general.theme}
           options={[
             { value: 'dark', label: 'Dark' },
@@ -62,29 +62,26 @@ export function GeneralSettings() {
         />
       </SettingsSection>
 
-      <SettingsSection title='Reset'>
-        <div className='flex items-center justify-between'>
+      <SettingsSection title="Reset">
+        <div className="flex items-center justify-between">
           <div>
-            <p className='font-medium'>Reset to Defaults</p>
-            <p className='text-sm text-text-muted'>Restore all settings to their original values</p>
+            <p className="font-medium">Reset to Defaults</p>
+            <p className="text-sm text-text-muted">Restore all settings to their original values</p>
           </div>
           {!showConfirm ? (
-            <button
-              onClick={() => setShowConfirm(true)}
-              className='btn-secondary px-4 py-2 rounded-lg flex items-center gap-2'
-            >
+            <button onClick={() => setShowConfirm(true)} className="btn-secondary px-4 py-2 rounded-lg flex items-center gap-2">
               <RotateCcw size={16} />
               Reset
             </button>
           ) : (
-            <div className='flex items-center gap-2'>
-              <button onClick={() => setShowConfirm(false)} className='btn-ghost px-3 py-2 rounded-lg text-sm'>
+            <div className="flex items-center gap-2">
+              <button onClick={() => setShowConfirm(false)} className="btn-ghost px-3 py-2 rounded-lg text-sm">
                 Cancel
               </button>
               <button
                 onClick={handleReset}
                 disabled={isResetting}
-                className='btn-primary px-4 py-2 rounded-lg flex items-center gap-2 bg-red-500 hover:bg-red-600'
+                className="btn-primary px-4 py-2 rounded-lg flex items-center gap-2 bg-red-500 hover:bg-red-600"
               >
                 {isResetting ? 'Resetting...' : 'Confirm Reset'}
               </button>

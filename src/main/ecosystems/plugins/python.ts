@@ -1,11 +1,11 @@
-import { BaseEcosystemPlugin } from '../base';
+import { BaseEcosystemPlugin } from '../base'
 
 export class PythonPlugin extends BaseEcosystemPlugin {
-  id = 'python';
-  name = 'Python';
-  icon = '🐍';
-  color = '#EAB308';
-  detectionFiles = ['requirements.txt', 'setup.py', 'pyproject.toml', 'Pipfile'];
+  id = 'python'
+  name = 'Python'
+  icon = '🐍'
+  color = '#EAB308'
+  detectionFiles = ['requirements.txt', 'setup.py', 'pyproject.toml', 'Pipfile']
   cleanablePatterns = [
     {
       pattern: '__pycache__',
@@ -67,7 +67,7 @@ export class PythonPlugin extends BaseEcosystemPlugin {
       description: 'Coverage HTML report',
       alwaysSafe: true,
     },
-  ];
+  ]
 }
 
-export const pythonPlugin = new PythonPlugin();
+export const pythonPlugin = new PythonPlugin()

@@ -11,11 +11,11 @@ export type EcosystemId =
   | 'php'
   | 'java'
   | 'elixir'
-  | 'dotnet';
+  | 'dotnet'
 
 export interface EcosystemSummary {
-  ecosystem: EcosystemId;
-  projectCount: number;
-  totalSize: number;
-  cleanableSize: number;
+  ecosystem: EcosystemId
+  projectCount: number
+  totalSize: number
+  cleanableSize: number
 }

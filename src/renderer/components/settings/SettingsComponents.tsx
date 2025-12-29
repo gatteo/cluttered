@@ -1,11 +1,11 @@
-import { useState, ReactNode } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, FolderOpen, X } from 'lucide-react';
+import { useState, ReactNode } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Plus, FolderOpen, X } from 'lucide-react'
 
 interface SettingsSectionProps {
-  title: string;
-  description?: string;
-  children: ReactNode;
+  title: string
+  description?: string
+  children: ReactNode
 }
 
 export function SettingsSection({ title, description, children }: SettingsSectionProps) {
@@ -13,38 +13,30 @@ export function SettingsSection({ title, description, children }: SettingsSectio
     <div className="space-y-3">
       <div>
         <h3 className="font-medium text-white">{title}</h3>
-        {description && (
-          <p className="text-text-muted text-sm">{description}</p>
-        )}
+        {description && <p className="text-text-muted text-sm">{description}</p>}
       </div>
       <div className="space-y-3">{children}</div>
     </div>
-  );
+  )
 }
 
 interface SettingsToggleProps {
-  label: string;
-  description?: string;
-  value: boolean;
-  onChange: (value: boolean) => void;
+  label: string
+  description?: string
+  value: boolean
+  onChange: (value: boolean) => void
 }
 
 export function SettingsToggle({ label, description, value, onChange }: SettingsToggleProps) {
   return (
     <label className="flex items-start gap-4 cursor-pointer group">
       <div className="flex-1">
-        <div className="text-white group-hover:text-accent-purple transition-colors">
-          {label}
-        </div>
-        {description && (
-          <p className="text-text-muted text-sm">{description}</p>
-        )}
+        <div className="text-white group-hover:text-accent-purple transition-colors">{label}</div>
+        {description && <p className="text-text-muted text-sm">{description}</p>}
       </div>
       <button
         type="button"
-        className={`relative w-12 h-7 rounded-full transition-colors ${
-          value ? 'bg-accent-purple' : 'bg-surface-interactive'
-        }`}
+        className={`relative w-12 h-7 rounded-full transition-colors ${value ? 'bg-accent-purple' : 'bg-surface-interactive'}`}
         onClick={() => onChange(!value)}
       >
         <motion.div
@@ -54,30 +46,21 @@ export function SettingsToggle({ label, description, value, onChange }: Settings
         />
       </button>
     </label>
-  );
+  )
 }
 
 interface SettingsSliderProps {
-  label: string;
-  description?: string;
-  value: number;
-  min: number;
-  max: number;
-  unit: string;
-  color?: string;
-  onChange: (value: number) => void;
+  label: string
+  description?: string
+  value: number
+  min: number
+  max: number
+  unit: string
+  color?: string
+  onChange: (value: number) => void
 }
 
-export function SettingsSlider({
-  label,
-  description,
-  value,
-  min,
-  max,
-  unit,
-  color,
-  onChange,
-}: SettingsSliderProps) {
+export function SettingsSlider({ label, description, value, min, max, unit, color, onChange }: SettingsSliderProps) {
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
@@ -89,9 +72,7 @@ export function SettingsSlider({
           </span>
         </div>
       </div>
-      {description && (
-        <p className="text-text-muted text-sm">{description}</p>
-      )}
+      {description && <p className="text-text-muted text-sm">{description}</p>}
       <input
         type="range"
         min={min}
@@ -101,24 +82,28 @@ export function SettingsSlider({
         className="w-full accent-accent-purple cursor-pointer"
       />
       <div className="flex justify-between text-xs text-text-muted">
-        <span>{min} {unit}</span>
-        <span>{max} {unit}</span>
+        <span>
+          {min} {unit}
+        </span>
+        <span>
+          {max} {unit}
+        </span>
       </div>
     </div>
-  );
+  )
 }
 
 interface SelectOption {
-  value: string;
-  label: string;
-  disabled?: boolean;
+  value: string
+  label: string
+  disabled?: boolean
 }
 
 interface SettingsSelectProps {
-  label: string;
-  value: string;
-  options: SelectOption[];
-  onChange: (value: string) => void;
+  label: string
+  value: string
+  options: SelectOption[]
+  onChange: (value: string) => void
 }
 
 export function SettingsSelect({ label, value, options, onChange }: SettingsSelectProps) {
@@ -137,20 +122,20 @@ export function SettingsSelect({ label, value, options, onChange }: SettingsSele
         ))}
       </select>
     </div>
-  );
+  )
 }
 
 interface RadioOption {
-  value: string;
-  label: string;
-  description?: string;
-  warning?: boolean;
+  value: string
+  label: string
+  description?: string
+  warning?: boolean
 }
 
 interface SettingsRadioProps {
-  value: string;
-  options: RadioOption[];
-  onChange: (value: string) => void;
+  value: string
+  options: RadioOption[]
+  onChange: (value: string) => void
 }
 
 export function SettingsRadio({ value, options, onChange }: SettingsRadioProps) {
@@ -174,46 +159,42 @@ export function SettingsRadio({ value, options, onChange }: SettingsRadioProps) 
             className="mt-1 accent-accent-purple"
           />
           <div>
-            <div className={`font-medium ${opt.warning ? 'text-red-400' : 'text-white'}`}>
-              {opt.label}
-            </div>
-            {opt.description && (
-              <p className="text-text-muted text-sm">{opt.description}</p>
-            )}
+            <div className={`font-medium ${opt.warning ? 'text-red-400' : 'text-white'}`}>{opt.label}</div>
+            {opt.description && <p className="text-text-muted text-sm">{opt.description}</p>}
           </div>
         </label>
       ))}
     </div>
-  );
+  )
 }
 
 interface PathListManagerProps {
-  paths: string[];
-  onChange: (paths: string[]) => void;
-  placeholder?: string;
-  defaultPath?: string;
+  paths: string[]
+  onChange: (paths: string[]) => void
+  placeholder?: string
+  defaultPath?: string
 }
 
 export function PathListManager({ paths, onChange, placeholder, defaultPath }: PathListManagerProps) {
-  const [newPath, setNewPath] = useState('');
+  const [newPath, setNewPath] = useState('')
 
   const addPath = () => {
     if (newPath && !paths.includes(newPath)) {
-      onChange([...paths, newPath]);
-      setNewPath('');
+      onChange([...paths, newPath])
+      setNewPath('')
     }
-  };
+  }
 
   const removePath = (path: string) => {
-    onChange(paths.filter((p) => p !== path));
-  };
+    onChange(paths.filter((p) => p !== path))
+  }
 
   const selectFolder = async () => {
-    const result = await window.electronAPI.selectFolder();
+    const result = await window.electronAPI.selectFolder()
     if (result && !paths.includes(result)) {
-      onChange([...paths, result]);
+      onChange([...paths, result])
     }
-  };
+  }
 
   return (
     <div className="space-y-3">
@@ -226,19 +207,11 @@ export function PathListManager({ paths, onChange, placeholder, defaultPath }: P
           className="flex-1 bg-surface-elevated border border-white/10 rounded-lg px-3 py-2 text-white placeholder-text-muted focus:outline-none focus:border-accent-purple"
           onKeyDown={(e) => e.key === 'Enter' && addPath()}
         />
-        <button
-          type="button"
-          className="btn-secondary px-4 py-2 rounded-lg flex items-center gap-1.5"
-          onClick={addPath}
-        >
+        <button type="button" className="btn-secondary px-4 py-2 rounded-lg flex items-center gap-1.5" onClick={addPath}>
           <Plus size={16} />
           Add
         </button>
-        <button
-          type="button"
-          className="btn-secondary px-4 py-2 rounded-lg flex items-center gap-1.5"
-          onClick={selectFolder}
-        >
+        <button type="button" className="btn-secondary px-4 py-2 rounded-lg flex items-center gap-1.5" onClick={selectFolder}>
           <FolderOpen size={16} />
           Browse
         </button>
@@ -254,22 +227,14 @@ export function PathListManager({ paths, onChange, placeholder, defaultPath }: P
             exit={{ opacity: 0, height: 0 }}
           >
             <span className="text-sm truncate flex-1">{path}</span>
-            <button
-              type="button"
-              className="text-red-400 hover:text-red-300 ml-2"
-              onClick={() => removePath(path)}
-            >
+            <button type="button" className="text-red-400 hover:text-red-300 ml-2" onClick={() => removePath(path)}>
               <X size={16} />
             </button>
           </motion.div>
         ))}
       </AnimatePresence>
 
-      {paths.length === 0 && (
-        <p className="text-text-muted text-sm">
-          No paths configured yet.
-        </p>
-      )}
+      {paths.length === 0 && <p className="text-text-muted text-sm">No paths configured yet.</p>}
     </div>
-  );
+  )
 }

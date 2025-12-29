@@ -1,11 +1,11 @@
-import { BaseEcosystemPlugin } from '../base';
+import { BaseEcosystemPlugin } from '../base'
 
 export class ElixirPlugin extends BaseEcosystemPlugin {
-  id = 'elixir';
-  name = 'Elixir';
-  icon = '💧';
-  color = '#6E4A7E';
-  detectionFiles = ['mix.exs'];
+  id = 'elixir'
+  name = 'Elixir'
+  icon = '💧'
+  color = '#6E4A7E'
+  detectionFiles = ['mix.exs']
   cleanablePatterns = [
     {
       pattern: '_build',
@@ -22,7 +22,7 @@ export class ElixirPlugin extends BaseEcosystemPlugin {
       description: 'ElixirLS cache',
       alwaysSafe: true,
     },
-  ];
+  ]
 }
 
-export const elixirPlugin = new ElixirPlugin();
+export const elixirPlugin = new ElixirPlugin()

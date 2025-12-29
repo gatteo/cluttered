@@ -1,11 +1,11 @@
-import { BaseEcosystemPlugin } from '../base';
+import { BaseEcosystemPlugin } from '../base'
 
 export class RubyPlugin extends BaseEcosystemPlugin {
-  id = 'ruby';
-  name = 'Ruby';
-  icon = '💎';
-  color = '#CC342D';
-  detectionFiles = ['Gemfile', '*.gemspec'];
+  id = 'ruby'
+  name = 'Ruby'
+  icon = '💎'
+  color = '#CC342D'
+  detectionFiles = ['Gemfile', '*.gemspec']
   cleanablePatterns = [
     {
       pattern: 'vendor/bundle',
@@ -27,7 +27,7 @@ export class RubyPlugin extends BaseEcosystemPlugin {
       description: 'Log files',
       alwaysSafe: true,
     },
-  ];
+  ]
 }
 
-export const rubyPlugin = new RubyPlugin();
+export const rubyPlugin = new RubyPlugin()

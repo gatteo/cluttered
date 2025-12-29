@@ -1,57 +1,55 @@
-import { useMemo, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Trash2, Loader2, RefreshCw, Info } from 'lucide-react';
-import { useProjectStore } from '../store/projectStore';
-import { useScanStore } from '../store/scanStore';
-import { useCleanStore } from '../store/cleanStore';
-import { formatBytes } from '../utils/format';
+import { useMemo, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Search, Trash2, Loader2, RefreshCw, Info } from 'lucide-react'
+import { useProjectStore } from '../store/projectStore'
+import { useScanStore } from '../store/scanStore'
+import { useCleanStore } from '../store/cleanStore'
+import { formatBytes } from '../utils/format'
 
 interface ActionBarProps {
-  onScan: () => void;
-  isScanning: boolean;
-  hasResults: boolean;
+  onScan: () => void
+  isScanning: boolean
+  hasResults: boolean
 }
 
 export function ActionBar({ onScan, isScanning, hasResults }: ActionBarProps) {
-  const { selectedIds } = useProjectStore();
-  const { isCleaning, startClean } = useCleanStore();
-  const scanResult = useScanStore((s) => s.result);
-  const [showInfo, setShowInfo] = useState(false);
+  const { selectedIds } = useProjectStore()
+  const { isCleaning, startClean } = useCleanStore()
+  const scanResult = useScanStore((s) => s.result)
+  const [showInfo, setShowInfo] = useState(false)
 
   // Get all cleanable projects (non-protected)
   const { cleanableProjects, cleanableSize, protectedCount, protectedSize } = useMemo(() => {
-    if (!scanResult?.projects) return { cleanableProjects: [], cleanableSize: 0, protectedCount: 0, protectedSize: 0 };
-    const cleanable = scanResult.projects.filter((p) => !p.isProtected && p.totalSize > 0);
-    const protectedProjects = scanResult.projects.filter((p) => p.isProtected);
+    if (!scanResult?.projects) return { cleanableProjects: [], cleanableSize: 0, protectedCount: 0, protectedSize: 0 }
+    const cleanable = scanResult.projects.filter((p) => !p.isProtected && p.totalSize > 0)
+    const protectedProjects = scanResult.projects.filter((p) => p.isProtected)
     return {
       cleanableProjects: cleanable,
       cleanableSize: cleanable.reduce((sum, p) => sum + p.totalSize, 0),
       protectedCount: protectedProjects.length,
       protectedSize: protectedProjects.reduce((sum, p) => sum + p.totalSize, 0),
-    };
-  }, [scanResult?.projects]);
+    }
+  }, [scanResult?.projects])
 
   // Calculate selected size
   const selectedSize = useMemo(() => {
-    if (!scanResult?.projects || selectedIds.size === 0) return 0;
-    return scanResult.projects
-      .filter((p) => selectedIds.has(p.id))
-      .reduce((sum, p) => sum + p.totalSize, 0);
-  }, [scanResult?.projects, selectedIds]);
+    if (!scanResult?.projects || selectedIds.size === 0) return 0
+    return scanResult.projects.filter((p) => selectedIds.has(p.id)).reduce((sum, p) => sum + p.totalSize, 0)
+  }, [scanResult?.projects, selectedIds])
 
-  const hasSelection = selectedIds.size > 0;
-  const hasCleanable = cleanableProjects.length > 0;
-  const hasProtected = protectedCount > 0;
+  const hasSelection = selectedIds.size > 0
+  const hasCleanable = cleanableProjects.length > 0
+  const hasProtected = protectedCount > 0
 
   const handleClean = () => {
     if (hasSelection) {
       // Clean only selected projects
-      startClean();
+      startClean()
     } else {
       // Clean all cleanable projects
-      startClean(cleanableProjects.map((p) => p.id));
+      startClean(cleanableProjects.map((p) => p.id))
     }
-  };
+  }
 
   return (
     <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-void via-void to-transparent pointer-events-none">
@@ -87,8 +85,8 @@ export function ActionBar({ onScan, isScanning, hasResults }: ActionBarProps) {
               }`}
               onClick={handleClean}
               disabled={(!hasCleanable && !hasSelection) || isCleaning}
-              whileHover={(hasCleanable || hasSelection) ? { scale: 1.02 } : {}}
-              whileTap={(hasCleanable || hasSelection) ? { scale: 0.98 } : {}}
+              whileHover={hasCleanable || hasSelection ? { scale: 1.02 } : {}}
+              whileTap={hasCleanable || hasSelection ? { scale: 0.98 } : {}}
             >
               {isCleaning ? (
                 <>
@@ -101,18 +99,12 @@ export function ActionBar({ onScan, isScanning, hasResults }: ActionBarProps) {
                   {hasSelection ? (
                     <>
                       Clean Selected
-                      <span className="bg-white/20 px-2.5 py-0.5 rounded-full text-sm ml-1">
-                        {formatBytes(selectedSize)}
-                      </span>
+                      <span className="bg-white/20 px-2.5 py-0.5 rounded-full text-sm ml-1">{formatBytes(selectedSize)}</span>
                     </>
                   ) : hasCleanable ? (
                     <>
                       Clean All
-                      <div
-                        className="relative"
-                        onMouseEnter={() => setShowInfo(true)}
-                        onMouseLeave={() => setShowInfo(false)}
-                      >
+                      <div className="relative" onMouseEnter={() => setShowInfo(true)} onMouseLeave={() => setShowInfo(false)}>
                         <span className="bg-white/20 px-2.5 py-0.5 rounded-full text-sm ml-1 inline-flex items-center gap-1">
                           {formatBytes(cleanableSize)}
                           {hasProtected && <Info size={12} className="opacity-70" />}
@@ -126,7 +118,8 @@ export function ActionBar({ onScan, isScanning, hasResults }: ActionBarProps) {
                               exit={{ opacity: 0, y: 4 }}
                               transition={{ duration: 0.15 }}
                             >
-                              {protectedCount} {protectedCount === 1 ? 'project' : 'projects'} with uncommitted changes excluded ({formatBytes(protectedSize)})
+                              {protectedCount} {protectedCount === 1 ? 'project' : 'projects'} with uncommitted changes excluded (
+                              {formatBytes(protectedSize)})
                               <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 tooltip-arrow" />
                             </motion.div>
                           )}
@@ -141,11 +134,7 @@ export function ActionBar({ onScan, isScanning, hasResults }: ActionBarProps) {
             </motion.button>
 
             {/* Secondary scan again option */}
-            <button
-              className="btn-subtle text-sm"
-              onClick={onScan}
-              disabled={isScanning}
-            >
+            <button className="btn-subtle text-sm" onClick={onScan} disabled={isScanning}>
               <RefreshCw size={14} />
               Scan again
             </button>
@@ -153,5 +142,5 @@ export function ActionBar({ onScan, isScanning, hasResults }: ActionBarProps) {
         )}
       </div>
     </div>
-  );
+  )
 }

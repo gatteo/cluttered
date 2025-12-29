@@ -1,24 +1,24 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { ArrowLeft, RotateCcw } from 'lucide-react';
-import { formatBytes, formatRelativeTime } from '../utils/format';
-import { useUIStore } from '../store/uiStore';
+import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
+import { ArrowLeft, RotateCcw } from 'lucide-react'
+import { formatBytes, formatRelativeTime } from '../utils/format'
+import { useUIStore } from '../store/uiStore'
 
 interface DeletionLogEntry {
-  id: string;
-  timestamp: Date;
-  projectPath: string;
-  projectName: string;
-  ecosystem: string;
-  artifacts: string[];
-  totalSize: number;
-  trashedPath?: string;
+  id: string
+  timestamp: Date
+  projectPath: string
+  projectName: string
+  ecosystem: string
+  artifacts: string[]
+  totalSize: number
+  trashedPath?: string
 }
 
 export function DeletionHistory() {
-  const [entries, setEntries] = useState<DeletionLogEntry[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const goBack = useUIStore((s) => s.goBack);
+  const [entries, setEntries] = useState<DeletionLogEntry[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const goBack = useUIStore((s) => s.goBack)
 
   useEffect(() => {
     window.electronAPI.getDeletionLog().then((data) => {
@@ -27,17 +27,17 @@ export function DeletionHistory() {
           ...e,
           timestamp: new Date(e.timestamp),
         }))
-      );
-      setIsLoading(false);
-    });
-  }, []);
+      )
+      setIsLoading(false)
+    })
+  }, [])
 
   const handleRestore = async (entryId: string) => {
-    const success = await window.electronAPI.restoreFromLog(entryId);
+    const success = await window.electronAPI.restoreFromLog(entryId)
     if (success) {
-      setEntries((prev) => prev.filter((e) => e.id !== entryId));
+      setEntries((prev) => prev.filter((e) => e.id !== entryId))
     }
-  };
+  }
 
   return (
     <div className="h-screen flex flex-col">
@@ -45,10 +45,7 @@ export function DeletionHistory() {
 
       <div className="px-8 py-6 border-b border-white/5">
         <div className="flex items-center gap-4">
-          <button
-            onClick={goBack}
-            className="btn-subtle text-sm"
-          >
+          <button onClick={goBack} className="btn-subtle text-sm">
             <ArrowLeft size={16} />
             Back
           </button>
@@ -58,9 +55,7 @@ export function DeletionHistory() {
       </div>
 
       <div className="flex-1 overflow-auto px-8 py-6">
-        <p className="text-text-muted mb-6">
-          Items are kept in Trash for 30 days and can be restored.
-        </p>
+        <p className="text-text-muted mb-6">Items are kept in Trash for 30 days and can be restored.</p>
 
         {isLoading ? (
           <div className="text-center py-8 text-text-muted">Loading...</div>
@@ -83,10 +78,7 @@ export function DeletionHistory() {
                   </p>
                 </div>
 
-                <button
-                  className="btn-secondary px-3 py-1 rounded-lg text-sm ml-4 flex items-center gap-1.5"
-                  onClick={() => handleRestore(entry.id)}
-                >
+                <button className="btn-secondary px-3 py-1 rounded-lg text-sm ml-4 flex items-center gap-1.5" onClick={() => handleRestore(entry.id)}>
                   <RotateCcw size={14} />
                   Restore
                 </button>
@@ -96,5 +88,5 @@ export function DeletionHistory() {
         )}
       </div>
     </div>
-  );
+  )
 }

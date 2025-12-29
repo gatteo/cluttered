@@ -1,17 +1,17 @@
-import { useScan } from '../hooks/useScan';
-import { useScanStore } from '../store/scanStore';
-import { useUIStore } from '../store/uiStore';
-import { DiskSpaceBar } from '../components/DiskSpaceBar';
-import { HeroStats } from '../components/HeroStats';
-import { EcosystemGrid } from '../components/EcosystemGrid';
-import { ActionBar } from '../components/ActionBar';
-import { ScanProgress } from '../components/ScanProgress';
-import { StatusBar } from '../components/StatusBar';
+import { useScan } from '../hooks/useScan'
+import { useScanStore } from '../store/scanStore'
+import { useUIStore } from '../store/uiStore'
+import { DiskSpaceBar } from '../components/DiskSpaceBar'
+import { HeroStats } from '../components/HeroStats'
+import { EcosystemGrid } from '../components/EcosystemGrid'
+import { ActionBar } from '../components/ActionBar'
+import { ScanProgress } from '../components/ScanProgress'
+import { StatusBar } from '../components/StatusBar'
 
 export function Dashboard() {
-  const { isScanning, progress, startScan, cancelScan } = useScan();
-  const result = useScanStore((s) => s.result);
-  const setView = useUIStore((s) => s.setView);
+  const { isScanning, progress, startScan, cancelScan } = useScan()
+  const result = useScanStore((s) => s.result)
+  const setView = useUIStore((s) => s.setView)
 
   return (
     <div className="h-screen flex flex-col">
@@ -27,10 +27,7 @@ export function Dashboard() {
               <ScanProgress progress={progress} onCancel={cancelScan} />
             ) : (
               <>
-                <HeroStats
-                  totalRecoverable={result?.totalSize ?? 0}
-                  projectCount={result?.totalProjects ?? 0}
-                />
+                <HeroStats totalRecoverable={result?.totalSize ?? 0} projectCount={result?.totalProjects ?? 0} />
                 <DiskSpaceBar />
               </>
             )}
@@ -41,10 +38,8 @@ export function Dashboard() {
         </div>
 
         {/* Action bar - hidden during scan */}
-        {!isScanning && (
-          <ActionBar onScan={startScan} isScanning={isScanning} hasResults={!!result} />
-        )}
+        {!isScanning && <ActionBar onScan={startScan} isScanning={isScanning} hasResults={!!result} />}
       </div>
     </div>
-  );
+  )
 }

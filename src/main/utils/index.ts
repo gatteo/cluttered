@@ -1,1 +1,1 @@
-export { parallelWalk, getDirectorySizeQuick } from './parallelWalk';
+export { parallelWalk, getDirectorySizeQuick } from './parallelWalk'

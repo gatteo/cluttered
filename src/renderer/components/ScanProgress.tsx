@@ -1,41 +1,24 @@
-import { motion } from 'framer-motion';
-import { formatBytes } from '../utils/format';
+import { motion } from 'framer-motion'
+import { formatBytes } from '../utils/format'
 
 interface ScanProgressType {
-  phase: 'discovering' | 'analyzing' | 'complete';
-  currentPath?: string;
-  projectsFound: number;
-  totalSize: number;
+  phase: 'discovering' | 'analyzing' | 'complete'
+  currentPath?: string
+  projectsFound: number
+  totalSize: number
 }
 
 interface ScanProgressProps {
-  progress: ScanProgressType | null;
-  onCancel: () => void;
+  progress: ScanProgressType | null
+  onCancel: () => void
 }
 
 function Spinner() {
   return (
     <div className="w-12 h-12 mx-auto mb-4">
       <svg className="animate-spin" viewBox="0 0 50 50">
-        <circle
-          className="opacity-20"
-          cx="25"
-          cy="25"
-          r="20"
-          fill="none"
-          stroke="url(#gradient)"
-          strokeWidth="4"
-        />
-        <circle
-          cx="25"
-          cy="25"
-          r="20"
-          fill="none"
-          stroke="url(#gradient)"
-          strokeWidth="4"
-          strokeLinecap="round"
-          strokeDasharray="80, 200"
-        />
+        <circle className="opacity-20" cx="25" cy="25" r="20" fill="none" stroke="url(#gradient)" strokeWidth="4" />
+        <circle cx="25" cy="25" r="20" fill="none" stroke="url(#gradient)" strokeWidth="4" strokeLinecap="round" strokeDasharray="80, 200" />
         <defs>
           <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#A855F7" />
@@ -44,13 +27,13 @@ function Spinner() {
         </defs>
       </svg>
     </div>
-  );
+  )
 }
 
 export function ScanProgress({ progress, onCancel }: ScanProgressProps) {
-  const phase = progress?.phase ?? 'discovering';
-  const projectsFound = progress?.projectsFound ?? 0;
-  const totalSize = progress?.totalSize ?? 0;
+  const phase = progress?.phase ?? 'discovering'
+  const projectsFound = progress?.projectsFound ?? 0
+  const totalSize = progress?.totalSize ?? 0
 
   return (
     <div className="py-8">
@@ -69,11 +52,7 @@ export function ScanProgress({ progress, onCancel }: ScanProgressProps) {
       </div>
 
       {/* Current path */}
-      {progress?.currentPath && (
-        <div className="text-center text-text-muted text-sm mb-6 truncate px-8">
-          {progress.currentPath}
-        </div>
-      )}
+      {progress?.currentPath && <div className="text-center text-text-muted text-sm mb-6 truncate px-8">{progress.currentPath}</div>}
 
       {/* Progress bar */}
       <div className="h-2 bg-surface-interactive rounded-full overflow-hidden mx-auto max-w-md">
@@ -89,13 +68,10 @@ export function ScanProgress({ progress, onCancel }: ScanProgressProps) {
 
       {/* Cancel button */}
       <div className="flex justify-center mt-6">
-        <button
-          onClick={onCancel}
-          className="btn-subtle text-sm"
-        >
+        <button onClick={onCancel} className="btn-subtle text-sm">
           Cancel
         </button>
       </div>
     </div>
-  );
+  )
 }

@@ -1,23 +1,23 @@
-import { create } from 'zustand';
+import { create } from 'zustand'
 
-type ViewType = 'dashboard' | 'ecosystem' | 'settings';
-type EcosystemId = string;
+type ViewType = 'dashboard' | 'ecosystem' | 'settings'
+type EcosystemId = string
 
 interface UIState {
-  currentView: ViewType;
-  selectedEcosystem: EcosystemId | null;
-  showConfirmDialog: boolean;
-  showDryRunPreview: boolean;
+  currentView: ViewType
+  selectedEcosystem: EcosystemId | null
+  showConfirmDialog: boolean
+  showDryRunPreview: boolean
 
   // Actions
-  setView: (view: ViewType) => void;
-  setSelectedEcosystem: (ecosystem: EcosystemId | null) => void;
-  goToEcosystem: (ecosystem: EcosystemId) => void;
-  goBack: () => void;
-  showConfirm: () => void;
-  hideConfirm: () => void;
-  showPreview: () => void;
-  hidePreview: () => void;
+  setView: (view: ViewType) => void
+  setSelectedEcosystem: (ecosystem: EcosystemId | null) => void
+  goToEcosystem: (ecosystem: EcosystemId) => void
+  goBack: () => void
+  showConfirm: () => void
+  hideConfirm: () => void
+  showPreview: () => void
+  hidePreview: () => void
 }
 
 export const useUIStore = create<UIState>((set) => ({
@@ -47,4 +47,4 @@ export const useUIStore = create<UIState>((set) => ({
 
   showPreview: () => set({ showDryRunPreview: true }),
   hidePreview: () => set({ showDryRunPreview: false }),
-}));
+}))

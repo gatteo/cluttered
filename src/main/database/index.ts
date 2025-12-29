@@ -1,18 +1,18 @@
-import Database from 'better-sqlite3';
-import path from 'path';
-import { app } from 'electron';
+import Database from 'better-sqlite3'
+import path from 'path'
+import { app } from 'electron'
 
-let db: Database.Database | null = null;
+let db: Database.Database | null = null
 
 export function initDatabase(): Database.Database {
-  const dbPath = path.join(app.getPath('userData'), 'cluttered.db');
-  db = new Database(dbPath);
+  const dbPath = path.join(app.getPath('userData'), 'cluttered.db')
+  db = new Database(dbPath)
 
   // Enable WAL mode for better performance
-  db.pragma('journal_mode = WAL');
+  db.pragma('journal_mode = WAL')
 
-  createTables(db);
-  return db;
+  createTables(db)
+  return db
 }
 
 function createTables(db: Database.Database) {
@@ -33,7 +33,7 @@ function createTables(db: Database.Database) {
       artifacts_json TEXT NOT NULL,
       scanned_at INTEGER NOT NULL
     )
-  `);
+  `)
 
   // Deletion log
   db.exec(`
@@ -47,7 +47,7 @@ function createTables(db: Database.Database) {
       total_size INTEGER NOT NULL,
       trashed_path TEXT
     )
-  `);
+  `)
 
   // Statistics
   db.exec(`
@@ -55,7 +55,7 @@ function createTables(db: Database.Database) {
       key TEXT PRIMARY KEY,
       value TEXT NOT NULL
     )
-  `);
+  `)
 
   // Settings
   db.exec(`
@@ -63,7 +63,7 @@ function createTables(db: Database.Database) {
       key TEXT PRIMARY KEY,
       value TEXT NOT NULL
     )
-  `);
+  `)
 
   // App state
   db.exec(`
@@ -71,26 +71,26 @@ function createTables(db: Database.Database) {
       key TEXT PRIMARY KEY,
       value TEXT NOT NULL
     )
-  `);
+  `)
 
   // Create indexes
   db.exec(`
     CREATE INDEX IF NOT EXISTS idx_scan_cache_ecosystem ON scan_cache(ecosystem);
     CREATE INDEX IF NOT EXISTS idx_scan_cache_status ON scan_cache(status);
     CREATE INDEX IF NOT EXISTS idx_deletion_log_timestamp ON deletion_log(timestamp);
-  `);
+  `)
 }
 
 export function getDatabase(): Database.Database {
   if (!db) {
-    throw new Error('Database not initialized. Call initDatabase() first.');
+    throw new Error('Database not initialized. Call initDatabase() first.')
   }
-  return db;
+  return db
 }
 
 export function closeDatabase() {
   if (db) {
-    db.close();
-    db = null;
+    db.close()
+    db = null
   }
 }

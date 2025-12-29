@@ -1,8 +1,8 @@
-import { useSettingsStore } from '../../store/settingsStore';
-import { SettingsSection, SettingsToggle, SettingsRadio } from './SettingsComponents';
+import { useSettingsStore } from '../../store/settingsStore'
+import { SettingsSection, SettingsToggle, SettingsRadio } from './SettingsComponents'
 
 export function CleanupSettings() {
-  const { settings, updateSettings } = useSettingsStore();
+  const { settings, updateSettings } = useSettingsStore()
 
   return (
     <div className="space-y-6 max-w-xl">
@@ -24,9 +24,11 @@ export function CleanupSettings() {
               warning: true,
             },
           ]}
-          onChange={(value) => updateSettings({
-            cleanup: { moveToTrash: value === 'trash' }
-          })}
+          onChange={(value) =>
+            updateSettings({
+              cleanup: { moveToTrash: value === 'trash' },
+            })
+          }
         />
       </SettingsSection>
 
@@ -35,9 +37,11 @@ export function CleanupSettings() {
           label="Confirm before cleaning recent projects"
           description="Show a warning when cleaning projects modified in the last 30 days"
           value={settings.cleanup.confirmRecentProjects}
-          onChange={(value) => updateSettings({
-            cleanup: { confirmRecentProjects: value }
-          })}
+          onChange={(value) =>
+            updateSettings({
+              cleanup: { confirmRecentProjects: value },
+            })
+          }
         />
       </SettingsSection>
 
@@ -46,20 +50,24 @@ export function CleanupSettings() {
           label="Sound effects"
           description="Play satisfying sounds during scanning and cleaning"
           value={settings.cleanup.soundEffects}
-          onChange={(value) => updateSettings({
-            cleanup: { soundEffects: value }
-          })}
+          onChange={(value) =>
+            updateSettings({
+              cleanup: { soundEffects: value },
+            })
+          }
         />
 
         <SettingsToggle
           label="Haptic feedback"
           description="Enable trackpad haptics on MacBook (Force Touch)"
           value={settings.cleanup.hapticFeedback}
-          onChange={(value) => updateSettings({
-            cleanup: { hapticFeedback: value }
-          })}
+          onChange={(value) =>
+            updateSettings({
+              cleanup: { hapticFeedback: value },
+            })
+          }
         />
       </SettingsSection>
     </div>
-  );
+  )
 }

@@ -1,13 +1,13 @@
-import { useEffect } from 'react';
-import { useScanStore } from '../store/scanStore';
+import { useEffect } from 'react'
+import { useScanStore } from '../store/scanStore'
 
 export function useScan() {
-  const store = useScanStore();
+  const store = useScanStore()
 
   useEffect(() => {
     // Load cached results on mount
-    store.loadCachedResults();
-  }, []);
+    store.loadCachedResults()
+  }, [])
 
   return {
     isScanning: store.isScanning,
@@ -17,5 +17,5 @@ export function useScan() {
     lastScanTime: store.lastScanTime,
     startScan: store.startScan,
     cancelScan: store.cancelScan,
-  };
+  }
 }

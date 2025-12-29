@@ -48,7 +48,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   isFirstRun: () => ipcRenderer.invoke('app:isFirstRun'),
 
   // Analytics
-  trackEvent: (event: string, properties?: Record<string, unknown>) =>
-    ipcRenderer.invoke('analytics:track', event, properties),
+  trackEvent: (event: string, properties?: Record<string, unknown>) => ipcRenderer.invoke('analytics:track', event, properties),
   updateAnalyticsEnabled: (enabled: boolean) => ipcRenderer.invoke('analytics:updateEnabled', enabled),
 })

@@ -1,72 +1,65 @@
-import { ProjectStatus, DetectionSettings } from '../../shared/types';
+import { ProjectStatus, DetectionSettings } from '../../shared/types'
 
 export class ProjectClassifier {
-  private settings: DetectionSettings;
+  private settings: DetectionSettings
 
   constructor(settings: DetectionSettings) {
-    this.settings = settings;
+    this.settings = settings
   }
 
   updateSettings(settings: DetectionSettings) {
-    this.settings = settings;
+    this.settings = settings
   }
 
   classify(lastModified: Date, lastGitCommit?: Date, lastIDEAccess?: Date): ProjectStatus {
     // Determine the most relevant date
-    const relevantDate = this.getMostRelevantDate(lastModified, lastGitCommit, lastIDEAccess);
+    const relevantDate = this.getMostRelevantDate(lastModified, lastGitCommit, lastIDEAccess)
 
-    const daysSinceActivity = this.daysSince(relevantDate);
+    const daysSinceActivity = this.daysSince(relevantDate)
 
     if (daysSinceActivity < this.settings.activeThresholdDays) {
-      return 'active';
+      return 'active'
     }
     if (daysSinceActivity < this.settings.recentThresholdDays) {
-      return 'recent';
+      return 'recent'
     }
     if (daysSinceActivity < this.settings.staleThresholdDays) {
-      return 'stale';
+      return 'stale'
     }
-    return 'dormant';
+    return 'dormant'
   }
 
-  private getMostRelevantDate(
-    lastModified: Date,
-    lastGitCommit?: Date,
-    lastIDEAccess?: Date
-  ): Date {
-    let mostRecent = lastModified;
+  private getMostRelevantDate(lastModified: Date, lastGitCommit?: Date, lastIDEAccess?: Date): Date {
+    let mostRecent = lastModified
 
     if (this.settings.considerGitActivity && lastGitCommit) {
       if (lastGitCommit > mostRecent) {
-        mostRecent = lastGitCommit;
+        mostRecent = lastGitCommit
       }
     }
 
     if (this.settings.considerIDEActivity && lastIDEAccess) {
       if (lastIDEAccess > mostRecent) {
-        mostRecent = lastIDEAccess;
+        mostRecent = lastIDEAccess
       }
     }
 
-    return mostRecent;
+    return mostRecent
   }
 
   private daysSince(date: Date): number {
-    const now = Date.now();
-    const diffMs = now - date.getTime();
-    return Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    const now = Date.now()
+    const diffMs = now - date.getTime()
+    return Math.floor(diffMs / (1000 * 60 * 60 * 24))
   }
 
   getStatusInfo(status: ProjectStatus): {
-    label: string;
-    color: string;
-    description: string;
-    icon: string;
+    label: string
+    color: string
+    description: string
+    icon: string
   } {
-    const statusInfo: Record<
-      ProjectStatus,
-      { label: string; color: string; description: string; icon: string }
-    > = {
+    const statusInfo: Record<ProjectStatus, { label: string; color: string; description: string; icon: string }> = {
       active: {
         label: 'Active',
         color: '#22C55E',
@@ -91,8 +84,8 @@ export class ProjectClassifier {
         description: `Modified over ${this.settings.staleThresholdDays} days ago`,
         icon: '🔴',
       },
-    };
+    }
 
-    return statusInfo[status];
+    return statusInfo[status]
   }
 }

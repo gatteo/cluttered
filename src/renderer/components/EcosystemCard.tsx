@@ -1,38 +1,33 @@
-import { memo, useCallback } from 'react';
-import { EcosystemSummary, Project } from '../types';
-import { formatBytes } from '../utils/format';
-import { useUIStore } from '../store/uiStore';
-import { useProjectStore } from '../store/projectStore';
-import { useScanStore } from '../store/scanStore';
-import { ecosystemConfigs } from '../config/ecosystems';
+import { memo, useCallback } from 'react'
+import { EcosystemSummary, Project } from '../types'
+import { formatBytes } from '../utils/format'
+import { useUIStore } from '../store/uiStore'
+import { useProjectStore } from '../store/projectStore'
+import { useScanStore } from '../store/scanStore'
+import { ecosystemConfigs } from '../config/ecosystems'
 
 // Stable empty array to prevent Zustand selector infinite loop
-const EMPTY_PROJECTS: Project[] = [];
+const EMPTY_PROJECTS: Project[] = []
 
 interface EcosystemCardProps {
-  ecosystem: EcosystemSummary;
-  disabled?: boolean;
+  ecosystem: EcosystemSummary
+  disabled?: boolean
 }
 
-export const EcosystemCard = memo(function EcosystemCard({
-  ecosystem,
-  disabled = false,
-}: EcosystemCardProps) {
-  const goToEcosystem = useUIStore((s) => s.goToEcosystem);
-  const selectedIds = useProjectStore((s) => s.selectedIds);
-  const projects = useScanStore((s) => s.result?.projects ?? EMPTY_PROJECTS);
-  const config = ecosystemConfigs[ecosystem.ecosystem];
+export const EcosystemCard = memo(function EcosystemCard({ ecosystem, disabled = false }: EcosystemCardProps) {
+  const goToEcosystem = useUIStore((s) => s.goToEcosystem)
+  const selectedIds = useProjectStore((s) => s.selectedIds)
+  const projects = useScanStore((s) => s.result?.projects ?? EMPTY_PROJECTS)
+  const config = ecosystemConfigs[ecosystem.ecosystem]
 
   // Count selected projects in this ecosystem
-  const selectedInEcosystem = projects.filter(
-    (p) => p.ecosystem === ecosystem.ecosystem && selectedIds.has(p.id)
-  ).length;
+  const selectedInEcosystem = projects.filter((p) => p.ecosystem === ecosystem.ecosystem && selectedIds.has(p.id)).length
 
   const handleClick = useCallback(() => {
     if (!disabled) {
-      goToEcosystem(ecosystem.ecosystem);
+      goToEcosystem(ecosystem.ecosystem)
     }
-  }, [disabled, goToEcosystem, ecosystem.ecosystem]);
+  }, [disabled, goToEcosystem, ecosystem.ecosystem])
 
   return (
     <button
@@ -89,12 +84,9 @@ export const EcosystemCard = memo(function EcosystemCard({
 
         {/* Progress indicator */}
         <div className="mt-3 h-1 bg-surface-interactive rounded-full overflow-hidden">
-          <div
-            className="h-full rounded-full animate-[grow_0.8s_ease-out_forwards]"
-            style={{ backgroundColor: config.color, width: '100%' }}
-          />
+          <div className="h-full rounded-full animate-[grow_0.8s_ease-out_forwards]" style={{ backgroundColor: config.color, width: '100%' }} />
         </div>
       </div>
     </button>
-  );
-});
+  )
+})

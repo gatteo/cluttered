@@ -1,21 +1,21 @@
-import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
 
 interface Particle {
-  id: number;
-  x: number;
-  color: string;
-  size: number;
-  rotation: number;
+  id: number
+  x: number
+  color: string
+  size: number
+  rotation: number
 }
 
-const colors = ['#A855F7', '#EC4899', '#22C55E', '#3B82F6', '#F59E0B'];
+const colors = ['#A855F7', '#EC4899', '#22C55E', '#3B82F6', '#F59E0B']
 
 export function ConfettiEffect() {
-  const [particles, setParticles] = useState<Particle[]>([]);
+  const [particles, setParticles] = useState<Particle[]>([])
 
   useEffect(() => {
-    const newParticles: Particle[] = [];
+    const newParticles: Particle[] = []
     for (let i = 0; i < 50; i++) {
       newParticles.push({
         id: i,
@@ -23,10 +23,10 @@ export function ConfettiEffect() {
         color: colors[Math.floor(Math.random() * colors.length)],
         size: Math.random() * 10 + 5,
         rotation: Math.random() * 360,
-      });
+      })
     }
-    setParticles(newParticles);
-  }, []);
+    setParticles(newParticles)
+  }, [])
 
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden z-50">
@@ -54,5 +54,5 @@ export function ConfettiEffect() {
         />
       ))}
     </div>
-  );
+  )
 }

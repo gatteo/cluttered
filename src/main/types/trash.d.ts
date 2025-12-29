@@ -1,11 +1,11 @@
 declare module 'trash' {
-  function trash(input: string | readonly string[], options?: trash.Options): Promise<void>;
+  function trash(input: string | readonly string[], options?: trash.Options): Promise<void>
 
   namespace trash {
     interface Options {
-      glob?: boolean;
+      glob?: boolean
     }
   }
 
-  export = trash;
+  export = trash
 }

@@ -1,13 +1,13 @@
-import { Settings } from 'lucide-react';
-import { useScanStore } from '../store/scanStore';
-import { formatRelativeTime } from '../utils/format';
+import { Settings } from 'lucide-react'
+import { useScanStore } from '../store/scanStore'
+import { formatRelativeTime } from '../utils/format'
 
 interface StatusBarProps {
-  onSettingsClick: () => void;
+  onSettingsClick: () => void
 }
 
 export function StatusBar({ onSettingsClick }: StatusBarProps) {
-  const lastScanTime = useScanStore((s) => s.lastScanTime);
+  const lastScanTime = useScanStore((s) => s.lastScanTime)
 
   return (
     <div className="h-12 px-4 flex items-center text-xs text-text-muted app-drag-region">
@@ -30,14 +30,11 @@ export function StatusBar({ onSettingsClick }: StatusBarProps) {
 
       {/* Right side - settings */}
       <div className="flex-1 flex justify-end">
-        <button
-          className="btn-subtle text-sm app-no-drag"
-          onClick={onSettingsClick}
-        >
+        <button className="btn-subtle text-sm app-no-drag" onClick={onSettingsClick}>
           Settings
           <Settings size={16} />
         </button>
       </div>
     </div>
-  );
+  )
 }

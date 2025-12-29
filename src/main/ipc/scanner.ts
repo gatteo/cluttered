@@ -42,12 +42,7 @@ export const scannerHandlers = {
 
       // Track scan completed
       const ecosystemIds = [...new Set(result.projects.map((p) => p.ecosystem))]
-      analyticsService.trackScanCompleted(
-        Date.now() - scanStartTime,
-        result.projects.length,
-        result.totalSize,
-        ecosystemIds
-      )
+      analyticsService.trackScanCompleted(Date.now() - scanStartTime, result.projects.length, result.totalSize, ecosystemIds)
 
       // Cache results
       console.log('[Scanner] Clearing cache and saving', result.projects.length, 'projects')

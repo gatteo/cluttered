@@ -1,11 +1,11 @@
-import { BaseEcosystemPlugin } from '../base';
+import { BaseEcosystemPlugin } from '../base'
 
 export class PhpPlugin extends BaseEcosystemPlugin {
-  id = 'php';
-  name = 'PHP';
-  icon = '🐘';
-  color = '#777BB4';
-  detectionFiles = ['composer.json'];
+  id = 'php'
+  name = 'PHP'
+  icon = '🐘'
+  color = '#777BB4'
+  detectionFiles = ['composer.json']
   cleanablePatterns = [
     {
       pattern: 'vendor',
@@ -22,7 +22,7 @@ export class PhpPlugin extends BaseEcosystemPlugin {
       description: 'Laravel bootstrap cache',
       alwaysSafe: true,
     },
-  ];
+  ]
 }
 
-export const phpPlugin = new PhpPlugin();
+export const phpPlugin = new PhpPlugin()

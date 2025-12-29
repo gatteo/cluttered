@@ -1,11 +1,11 @@
-import { BaseEcosystemPlugin } from '../base';
+import { BaseEcosystemPlugin } from '../base'
 
 export class NodejsPlugin extends BaseEcosystemPlugin {
-  id = 'nodejs';
-  name = 'Node.js';
-  icon = '📦';
-  color = '#22C55E';
-  detectionFiles = ['package.json'];
+  id = 'nodejs'
+  name = 'Node.js'
+  icon = '📦'
+  color = '#22C55E'
+  detectionFiles = ['package.json']
   cleanablePatterns = [
     {
       pattern: 'node_modules',
@@ -82,7 +82,7 @@ export class NodejsPlugin extends BaseEcosystemPlugin {
       description: 'Storybook build',
       alwaysSafe: true,
     },
-  ];
+  ]
 }
 
-export const nodejsPlugin = new NodejsPlugin();
+export const nodejsPlugin = new NodejsPlugin()

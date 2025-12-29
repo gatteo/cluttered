@@ -1,45 +1,45 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Eye, Loader2 } from 'lucide-react';
-import { formatBytes } from '../utils/format';
-import { useProjectStore } from '../store/projectStore';
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Eye, Loader2 } from 'lucide-react'
+import { formatBytes } from '../utils/format'
+import { useProjectStore } from '../store/projectStore'
 
 interface CleanResult {
-  bytesFreed: number;
-  filesDeleted: number;
-  projectsCleaned: string[];
+  bytesFreed: number
+  filesDeleted: number
+  projectsCleaned: string[]
 }
 
 interface DryRunPreviewProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onProceed: () => void;
+  isOpen: boolean
+  onClose: () => void
+  onProceed: () => void
 }
 
 export function DryRunPreview({ isOpen, onClose, onProceed }: DryRunPreviewProps) {
-  const [preview, setPreview] = useState<CleanResult | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const selectedIds = useProjectStore((s) => s.selectedIds);
+  const [preview, setPreview] = useState<CleanResult | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const selectedIds = useProjectStore((s) => s.selectedIds)
 
   useEffect(() => {
     if (isOpen) {
       const runPreview = async () => {
-        setIsLoading(true);
+        setIsLoading(true)
         try {
           const result = await window.electronAPI.cleanProjects({
             projectIds: Array.from(selectedIds),
             dryRun: true,
             moveToTrash: true,
-          });
-          setPreview(result);
+          })
+          setPreview(result)
         } catch {
-          setPreview(null);
+          setPreview(null)
         }
-        setIsLoading(false);
-      };
-      runPreview();
+        setIsLoading(false)
+      }
+      runPreview()
     }
-  }, [isOpen, selectedIds]);
+  }, [isOpen, selectedIds])
 
   return (
     <AnimatePresence>
@@ -71,9 +71,7 @@ export function DryRunPreview({ isOpen, onClose, onProceed }: DryRunPreviewProps
             ) : preview ? (
               <>
                 <div className="text-center py-4">
-                  <div className="text-4xl font-bold text-accent-green">
-                    {formatBytes(preview.bytesFreed)}
-                  </div>
+                  <div className="text-4xl font-bold text-accent-green">{formatBytes(preview.bytesFreed)}</div>
                   <p className="text-text-secondary mt-1">will be freed</p>
                 </div>
 
@@ -88,9 +86,7 @@ export function DryRunPreview({ isOpen, onClose, onProceed }: DryRunPreviewProps
                   </div>
                 </div>
 
-                <p className="text-text-muted text-sm mb-4">
-                  This is a preview. Files will be moved to Trash when you proceed.
-                </p>
+                <p className="text-text-muted text-sm mb-4">This is a preview. Files will be moved to Trash when you proceed.</p>
 
                 <div className="flex gap-3 justify-end">
                   <button className="btn-secondary px-4 py-2 rounded-lg" onClick={onClose}>
@@ -113,5 +109,5 @@ export function DryRunPreview({ isOpen, onClose, onProceed }: DryRunPreviewProps
         </motion.div>
       )}
     </AnimatePresence>
-  );
+  )
 }
