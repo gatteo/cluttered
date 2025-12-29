@@ -35,7 +35,7 @@ const defaultSettings: Settings = {
   general: {
     startAtLogin: false,
     checkForUpdates: true,
-    sendAnalytics: false,
+    sendAnalytics: true,
     theme: 'dark',
   },
   scanning: {

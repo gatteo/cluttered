@@ -42,7 +42,10 @@ export function GeneralSettings() {
           label='Send anonymous usage statistics'
           description='Help improve Cluttered by sharing anonymous data'
           value={settings.general.sendAnalytics}
-          onChange={(value) => updateSettings({ general: { sendAnalytics: value } })}
+          onChange={(value) => {
+            updateSettings({ general: { sendAnalytics: value } })
+            window.electronAPI.updateAnalyticsEnabled(value)
+          }}
         />
       </SettingsSection>
 

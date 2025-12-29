@@ -1,11 +1,19 @@
-import { app, BrowserWindow } from 'electron';
-import path from 'path';
-import { initDatabase, closeDatabase } from './database';
-import { registerIPCHandlers } from './ipc';
+import dotenv from 'dotenv'
+import path from 'path'
+import { app, BrowserWindow } from 'electron'
+import { initDatabase, closeDatabase } from './database'
+import { registerIPCHandlers } from './ipc'
+import { analyticsService } from './services/analyticsService'
 
-let mainWindow: BrowserWindow | null = null;
+// Load .env from project root (works in both dev and production)
+// In dev: __dirname is dist/main/main/, so go up 3 levels to project root
+// In production: .env should be in resources
+const envPath = app.isPackaged ? path.join(process.resourcesPath, '.env') : path.join(__dirname, '../../../.env')
+dotenv.config({ path: envPath })
 
-const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
+let mainWindow: BrowserWindow | null = null
+
+const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -23,45 +31,49 @@ function createWindow() {
       nodeIntegration: false,
       sandbox: false,
     },
-  });
+  })
 
   // Register IPC handlers with access to mainWindow
-  registerIPCHandlers(mainWindow);
+  registerIPCHandlers(mainWindow)
 
   if (isDev) {
-    mainWindow.loadURL('http://localhost:5173');
-    mainWindow.webContents.openDevTools();
+    mainWindow.loadURL('http://localhost:5173')
+    mainWindow.webContents.openDevTools()
   } else {
-    mainWindow.loadFile(path.join(__dirname, '../../renderer/index.html'));
+    mainWindow.loadFile(path.join(__dirname, '../../renderer/index.html'))
   }
 
   mainWindow.on('closed', () => {
-    mainWindow = null;
-  });
+    mainWindow = null
+  })
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   // Initialize database
-  initDatabase();
+  initDatabase()
+
+  // Initialize analytics (after database so settings are available)
+  await analyticsService.init()
 
   // Create window
-  createWindow();
+  createWindow()
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
+      createWindow()
     }
-  });
-});
+  })
+})
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
-    app.quit();
+    app.quit()
   }
-});
+})
 
-app.on('before-quit', () => {
-  closeDatabase();
-});
+app.on('before-quit', async () => {
+  await analyticsService.shutdown()
+  closeDatabase()
+})
 
-export { mainWindow };
+export { mainWindow }

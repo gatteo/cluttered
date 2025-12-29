@@ -34,6 +34,10 @@ export interface ElectronAPI {
 
   // First run
   isFirstRun: () => Promise<boolean>;
+
+  // Analytics
+  trackEvent: (event: string, properties?: Record<string, unknown>) => Promise<void>;
+  updateAnalyticsEnabled: (enabled: boolean) => Promise<void>;
 }
 
 // Types will be fully defined in Task 02

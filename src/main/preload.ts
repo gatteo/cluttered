@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer } from 'electron';
+import { contextBridge, ipcRenderer } from 'electron'
 
 // Expose protected methods that allow the renderer process to use
 // ipcRenderer without exposing the entire object
@@ -12,17 +12,17 @@ contextBridge.exposeInMainWorld('electronAPI', {
   cancelScan: () => ipcRenderer.invoke('scan:cancel'),
   getCachedResults: () => ipcRenderer.invoke('scan:getCached'),
   onScanProgress: (callback: (progress: any) => void) => {
-    const subscription = (_event: any, data: any) => callback(data);
-    ipcRenderer.on('scan:progress', subscription);
-    return () => ipcRenderer.removeListener('scan:progress', subscription);
+    const subscription = (_event: any, data: any) => callback(data)
+    ipcRenderer.on('scan:progress', subscription)
+    return () => ipcRenderer.removeListener('scan:progress', subscription)
   },
 
   // Cleaner (will be implemented in Task 09)
   cleanProjects: (options: any) => ipcRenderer.invoke('clean:start', options),
   onCleanProgress: (callback: (progress: any) => void) => {
-    const subscription = (_event: any, data: any) => callback(data);
-    ipcRenderer.on('clean:progress', subscription);
-    return () => ipcRenderer.removeListener('clean:progress', subscription);
+    const subscription = (_event: any, data: any) => callback(data)
+    ipcRenderer.on('clean:progress', subscription)
+    return () => ipcRenderer.removeListener('clean:progress', subscription)
   },
 
   // Settings (will be implemented in Task 10)
@@ -46,4 +46,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   // First run check
   isFirstRun: () => ipcRenderer.invoke('app:isFirstRun'),
-});
+
+  // Analytics
+  trackEvent: (event: string, properties?: Record<string, unknown>) =>
+    ipcRenderer.invoke('analytics:track', event, properties),
+  updateAnalyticsEnabled: (enabled: boolean) => ipcRenderer.invoke('analytics:updateEnabled', enabled),
+})
