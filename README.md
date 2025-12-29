@@ -44,6 +44,10 @@ Ever wondered where your disk space went? Chances are, it's hiding in:
 
 Cluttered finds all these across your machine and lets you clean them safely.
 
+<p align="center">
+  <img src="assets/screenshots/screenshot-dash.png" alt="Cluttered Dashboard" width="800">
+</p>
+
 ## Features
 
 - **Multi-ecosystem support** - Node.js, Python, Rust, Go, Xcode, Android, and more
