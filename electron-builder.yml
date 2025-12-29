@@ -24,16 +24,15 @@ mac:
   gatekeeperAssess: false
   entitlements: build/entitlements.mac.plist
   entitlementsInherit: build/entitlements.mac.plist
-  notarize: false  # Set to true when you have Apple Developer credentials
+  identity: "Matteo Giardino (X745HT6K4R)"
+  notarize: false  # We handle notarization manually in build-dmg.sh
   target:
     - target: dmg
       arch:
-        - x64
-        - arm64
+        - universal
     - target: zip
       arch:
-        - x64
-        - arm64
+        - universal
 
 # Mac App Store configuration
 mas:
@@ -55,7 +54,7 @@ pkg:
   identity: "B82ECD43A06B5CAA596E246FB59E2D6B8C088CA3"
 
 dmg:
-  sign: false
+  sign: true
   contents:
     - x: 130
       y: 220
