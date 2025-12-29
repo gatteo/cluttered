@@ -33,6 +33,7 @@
     "package": "npm run build && electron-builder",
     "package:dir": "npm run build && electron-builder --dir",
     "package:mas": "./scripts/build-mas.sh",
+    "package:dmg": "./scripts/build-dmg.sh",
     "lint": "eslint src --ext .ts,.tsx",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist release",
