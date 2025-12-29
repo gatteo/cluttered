@@ -5,7 +5,7 @@
 <h1 align="center">Cluttered</h1>
 
 <p align="center">
-  <strong>Reclaim disk space by cleaning dev project artifacts</strong>
+  <strong>A beautiful, addictive disk cleaner for developers</strong>
 </p>
 
 <p align="center">
