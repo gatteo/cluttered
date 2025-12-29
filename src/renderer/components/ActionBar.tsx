@@ -81,72 +81,64 @@ export function ActionBar({ onScan, isScanning, hasResults }: ActionBarProps) {
         ) : (
           // Has results - show Clean as primary
           <>
-            <div className="relative flex items-center gap-2">
-              <motion.button
-                className={`btn-primary px-4 py-2 rounded-xl font-medium flex items-center gap-2 text-lg ${
-                  !hasCleanable && !hasSelection ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
-                onClick={handleClean}
-                disabled={(!hasCleanable && !hasSelection) || isCleaning}
-                whileHover={(hasCleanable || hasSelection) ? { scale: 1.02 } : {}}
-                whileTap={(hasCleanable || hasSelection) ? { scale: 0.98 } : {}}
-              >
-                {isCleaning ? (
-                  <>
-                    <Loader2 size={20} className="animate-spin" />
-                    Cleaning...
-                  </>
-                ) : (
-                  <>
-                    <Trash2 size={20} />
-                    {hasSelection ? (
-                      <>
-                        Clean Selected
-                        <span className="bg-white/20 px-2.5 py-0.5 rounded-full text-sm ml-1">
-                          {formatBytes(selectedSize)}
-                        </span>
-                      </>
-                    ) : hasCleanable ? (
-                      <>
-                        Clean All
-                        <span className="bg-white/20 px-2.5 py-0.5 rounded-full text-sm ml-1">
-                          {formatBytes(cleanableSize)}
-                        </span>
-                      </>
-                    ) : (
-                      'Nothing to Clean'
-                    )}
-                  </>
-                )}
-              </motion.button>
-
-              {/* Info button for protected projects */}
-              {hasProtected && !hasSelection && (
-                <div className="relative">
-                  <button
-                    className="p-2 text-text-muted hover:text-white hover:bg-white/5 rounded-lg transition-colors"
-                    onMouseEnter={() => setShowInfo(true)}
-                    onMouseLeave={() => setShowInfo(false)}
-                  >
-                    <Info size={18} />
-                  </button>
-                  <AnimatePresence>
-                    {showInfo && (
-                      <motion.div
-                        className="absolute bottom-full right-0 mb-2 px-3 py-2 text-xs text-white tooltip whitespace-nowrap"
-                        initial={{ opacity: 0, y: 4 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 4 }}
-                        transition={{ duration: 0.15 }}
+            <motion.button
+              className={`btn-primary px-4 py-2 rounded-xl font-medium flex items-center gap-2 text-lg ${
+                !hasCleanable && !hasSelection ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+              onClick={handleClean}
+              disabled={(!hasCleanable && !hasSelection) || isCleaning}
+              whileHover={(hasCleanable || hasSelection) ? { scale: 1.02 } : {}}
+              whileTap={(hasCleanable || hasSelection) ? { scale: 0.98 } : {}}
+            >
+              {isCleaning ? (
+                <>
+                  <Loader2 size={20} className="animate-spin" />
+                  Cleaning...
+                </>
+              ) : (
+                <>
+                  <Trash2 size={20} />
+                  {hasSelection ? (
+                    <>
+                      Clean Selected
+                      <span className="bg-white/20 px-2.5 py-0.5 rounded-full text-sm ml-1">
+                        {formatBytes(selectedSize)}
+                      </span>
+                    </>
+                  ) : hasCleanable ? (
+                    <>
+                      Clean All
+                      <div
+                        className="relative"
+                        onMouseEnter={() => setShowInfo(true)}
+                        onMouseLeave={() => setShowInfo(false)}
                       >
-                        {protectedCount} {protectedCount === 1 ? 'project' : 'projects'} with uncommitted changes excluded ({formatBytes(protectedSize)})
-                        <div className="absolute top-full right-4 border-4 tooltip-arrow" />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
+                        <span className="bg-white/20 px-2.5 py-0.5 rounded-full text-sm ml-1 inline-flex items-center gap-1">
+                          {formatBytes(cleanableSize)}
+                          {hasProtected && <Info size={12} className="opacity-70" />}
+                        </span>
+                        <AnimatePresence>
+                          {showInfo && hasProtected && (
+                            <motion.div
+                              className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 text-xs text-white tooltip whitespace-nowrap"
+                              initial={{ opacity: 0, y: 4 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: 4 }}
+                              transition={{ duration: 0.15 }}
+                            >
+                              {protectedCount} {protectedCount === 1 ? 'project' : 'projects'} with uncommitted changes excluded ({formatBytes(protectedSize)})
+                              <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 tooltip-arrow" />
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    </>
+                  ) : (
+                    'Nothing to Clean'
+                  )}
+                </>
               )}
-            </div>
+            </motion.button>
 
             {/* Secondary scan again option */}
             <button

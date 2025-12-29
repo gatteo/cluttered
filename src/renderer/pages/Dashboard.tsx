@@ -1,4 +1,3 @@
-import { Settings } from 'lucide-react';
 import { useScan } from '../hooks/useScan';
 import { useScanStore } from '../store/scanStore';
 import { useUIStore } from '../store/uiStore';
@@ -16,16 +15,8 @@ export function Dashboard() {
 
   return (
     <div className="h-screen flex flex-col">
-      {/* Title bar drag region with settings */}
-      <div className="h-12 app-drag-region flex items-center justify-end px-4">
-        <button
-          className="btn-subtle text-sm app-no-drag"
-          onClick={() => setView('settings')}
-        >
-          Settings
-          <Settings size={16} />
-        </button>
-      </div>
+      {/* Status bar with settings */}
+      <StatusBar onSettingsClick={() => setView('settings')} />
 
       {/* Main content - centered with max width */}
       <div className="flex-1 overflow-auto px-8 py-6" style={{ willChange: 'scroll-position' }}>
@@ -54,9 +45,6 @@ export function Dashboard() {
           <ActionBar onScan={startScan} isScanning={isScanning} hasResults={!!result} />
         )}
       </div>
-
-      {/* Status bar */}
-      <StatusBar />
     </div>
   );
 }
