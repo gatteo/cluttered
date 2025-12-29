@@ -1,6 +1,6 @@
 {
   "name": "cluttered",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A beautiful, addictive disk cleaner for developers",
   "main": "dist/main/main/index.js",
   "author": "Matteo Giardino <me@matteogiardino.com>",
