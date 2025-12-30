@@ -11,12 +11,6 @@ files:
   - dist/**/*
   - package.json
 
-extraResources:
-  - from: assets/sounds
-    to: sounds
-    filter:
-      - "**/*"
-
 mac:
   category: public.app-category.developer-tools
   icon: assets/icons/icon-border.icns
