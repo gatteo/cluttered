@@ -19,7 +19,7 @@ extraResources:
 
 mac:
   category: public.app-category.developer-tools
-  icon: assets/icons/icon.icns
+  icon: assets/icons/icon-border.icns
   hardenedRuntime: true
   gatekeeperAssess: false
   entitlements: build/entitlements.mac.plist
