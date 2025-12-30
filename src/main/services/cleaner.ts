@@ -5,6 +5,7 @@ import { ecosystemRegistry } from '../ecosystems'
 import { deletionLogRepo } from '../database/repositories/deletionLog'
 import { statisticsRepo } from '../database/repositories/statistics'
 import { ProtectionAnalyzer } from './protectionAnalyzer'
+import { quotaService } from './quotaService'
 
 export class CleanerService extends BaseService {
   private protectionAnalyzer: ProtectionAnalyzer
@@ -19,6 +20,22 @@ export class CleanerService extends BaseService {
   async clean(projects: Project[], options: CleanOptions): Promise<CleanResult> {
     if (this.isCleaning) {
       throw new Error('Cleaning already in progress')
+    }
+
+    // Check quota before cleaning (skip for dry run)
+    if (!options.dryRun) {
+      const totalBytesToClean = projects.reduce((sum, p) => sum + p.totalSize, 0)
+      const quotaCheck = quotaService.canClean(totalBytesToClean)
+
+      if (!quotaCheck.allowed) {
+        return {
+          success: false,
+          bytesFreed: 0,
+          filesDeleted: 0,
+          projectsCleaned: [],
+          errors: [{ projectId: 'quota', error: quotaCheck.reason || 'Weekly limit reached' }],
+        }
+      }
     }
 
     this.isCleaning = true
@@ -63,9 +80,10 @@ export class CleanerService extends BaseService {
           result.filesDeleted += cleanResult.filesDeleted
           result.projectsCleaned.push(project.id)
 
-          // Log deletion for restore capability
+          // Log deletion for restore capability and record quota
           if (!options.dryRun) {
             await this.logDeletion(project, cleanResult.artifacts)
+            quotaService.recordCleaning(cleanResult.bytesFreed, project.id, project.name)
           }
         } catch (error) {
           result.errors.push({

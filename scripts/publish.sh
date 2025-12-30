@@ -135,9 +135,22 @@ echo -e "\n${GREEN}[4/5] Committing and pushing to GitHub...${NC}"
 
 # Generate changelog for commit
 PREV_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+CHANGELOG=""
 if [ -n "$PREV_TAG" ]; then
-    CHANGELOG=$(git log "${PREV_TAG}..HEAD" --pretty=format:"- %s" --no-merges | grep -v "Generated with \[Claude Code\]" | head -20 || true)
-else
+    # Try direct ancestry first
+    CHANGELOG=$(git log "${PREV_TAG}..HEAD" --pretty=format:"- %s" --no-merges 2>/dev/null | grep -v "chore: release" | head -20 || true)
+
+    # If empty (possibly due to history rewrite), use merge-base
+    if [ -z "$CHANGELOG" ]; then
+        MERGE_BASE=$(git merge-base "$PREV_TAG" HEAD 2>/dev/null || echo "")
+        if [ -n "$MERGE_BASE" ]; then
+            CHANGELOG=$(git log "${MERGE_BASE}..HEAD" --pretty=format:"- %s" --no-merges 2>/dev/null | grep -v "chore: release" | head -20 || true)
+        fi
+    fi
+fi
+
+# Fallback if still empty
+if [ -z "$CHANGELOG" ]; then
     CHANGELOG="- Initial release"
 fi
 

@@ -4,6 +4,8 @@ import { app, BrowserWindow } from 'electron'
 import { initDatabase, closeDatabase } from './database'
 import { registerIPCHandlers } from './ipc'
 import { analyticsService } from './services/analyticsService'
+import { licenseService } from './services/licensing/licenseService'
+import { schedulerService } from './services/schedulerService'
 
 // Load .env from project root (works in both dev and production)
 // In dev: __dirname is dist/main/main/, so go up 3 levels to project root
@@ -52,6 +54,12 @@ app.whenReady().then(async () => {
   // Initialize database
   initDatabase()
 
+  // Initialize license service (after database)
+  licenseService.init()
+
+  // Start scheduler service (after license service)
+  schedulerService.start()
+
   // Initialize analytics (after database so settings are available)
   await analyticsService.init()
 
@@ -72,6 +80,7 @@ app.on('window-all-closed', () => {
 })
 
 app.on('before-quit', async () => {
+  schedulerService.stop()
   await analyticsService.shutdown()
   closeDatabase()
 })

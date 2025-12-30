@@ -73,11 +73,65 @@ function createTables(db: Database.Database) {
     )
   `)
 
+  // License storage (provider-agnostic)
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS license (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      license_key TEXT,
+      email TEXT,
+      provider TEXT NOT NULL,
+      provider_customer_id TEXT,
+      provider_transaction_id TEXT,
+      purchased_at INTEGER NOT NULL,
+      validated_at INTEGER,
+      is_valid INTEGER DEFAULT 1,
+      raw_data TEXT
+    )
+  `)
+
+  // Cleaning quota tracking (for free tier limit)
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS cleaning_quota (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      cleaned_at INTEGER NOT NULL,
+      bytes_cleaned INTEGER NOT NULL,
+      project_id TEXT,
+      project_name TEXT
+    )
+  `)
+
+  // Scheduled scan settings
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS scheduled_scan_settings (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      enabled INTEGER DEFAULT 0,
+      frequency TEXT DEFAULT 'weekly',
+      time_hour INTEGER DEFAULT 9,
+      time_minute INTEGER DEFAULT 0,
+      day_of_week INTEGER DEFAULT 0,
+      notify_threshold_bytes INTEGER DEFAULT 10737418240,
+      last_run_at INTEGER
+    )
+  `)
+
+  // Auto-clean settings
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS auto_clean_settings (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      enabled INTEGER DEFAULT 0,
+      min_inactive_days INTEGER DEFAULT 90,
+      max_bytes_per_run INTEGER DEFAULT 53687091200,
+      show_notification INTEGER DEFAULT 1,
+      last_run_at INTEGER
+    )
+  `)
+
   // Create indexes
   db.exec(`
     CREATE INDEX IF NOT EXISTS idx_scan_cache_ecosystem ON scan_cache(ecosystem);
     CREATE INDEX IF NOT EXISTS idx_scan_cache_status ON scan_cache(status);
     CREATE INDEX IF NOT EXISTS idx_deletion_log_timestamp ON deletion_log(timestamp);
+    CREATE INDEX IF NOT EXISTS idx_quota_date ON cleaning_quota(cleaned_at);
   `)
 }
 

@@ -38,6 +38,36 @@ export interface ElectronAPI {
   // Analytics
   trackEvent: (event: string, properties?: Record<string, unknown>) => Promise<void>
   updateAnalyticsEnabled: (enabled: boolean) => Promise<void>
+
+  // License
+  license: {
+    isPro: () => Promise<boolean>
+    get: () => Promise<LicenseInfo | null>
+    activate: (key: string) => Promise<LicenseValidationResult>
+    deactivate: () => Promise<boolean>
+    getCheckoutUrl: (email?: string) => Promise<string | null>
+    openCheckout: (email?: string) => Promise<boolean>
+  }
+
+  // Quota
+  quota: {
+    get: () => Promise<QuotaInfo>
+    canClean: (bytes: number) => Promise<QuotaCheckResult>
+  }
+
+  // Scheduler
+  scheduler: {
+    getSettings: () => Promise<SchedulerSettings>
+    saveSettings: (settings: Partial<SchedulerSettings>) => Promise<SchedulerSettings>
+    runNow: () => Promise<boolean>
+  }
+
+  // Auto-clean
+  autoClean: {
+    getSettings: () => Promise<AutoCleanSettings>
+    saveSettings: (settings: Partial<AutoCleanSettings>) => Promise<AutoCleanSettings>
+    runNow: () => Promise<AutoCleanResult | null>
+  }
 }
 
 // Types will be fully defined in Task 02
@@ -171,6 +201,58 @@ interface DiskSpace {
   total: number
   free: number
   used: number
+}
+
+interface LicenseInfo {
+  email: string | null
+  provider: string
+  purchasedAt: string
+  isValid: boolean
+}
+
+interface LicenseValidationResult {
+  isValid: boolean
+  license?: LicenseInfo
+  error?: string
+}
+
+interface QuotaInfo {
+  isPro: boolean
+  used: number
+  limit: number
+  remaining: number
+  percentUsed: number
+  resetAt: string | null
+  canClean: boolean
+}
+
+interface QuotaCheckResult {
+  allowed: boolean
+  reason?: string
+  remaining?: number
+}
+
+interface SchedulerSettings {
+  enabled: boolean
+  frequency: 'daily' | 'weekly' | 'monthly'
+  timeHour: number
+  timeMinute: number
+  dayOfWeek: number
+  notifyThresholdBytes: number
+  lastRunAt: string | null
+}
+
+interface AutoCleanSettings {
+  enabled: boolean
+  minInactiveDays: number
+  maxBytesPerRun: number
+  showNotification: boolean
+  lastRunAt: string | null
+}
+
+interface AutoCleanResult {
+  bytesFreed: number
+  projectsCleaned: number
 }
 
 declare global {

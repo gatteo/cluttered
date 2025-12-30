@@ -1,6 +1,6 @@
 appId: dev.cluttered.app
 productName: Cluttered
-copyright: Copyright © 2024 Cluttered
+copyright: Copyright © 2025 Cluttered
 artifactName: "${productName}-${version}-${arch}.${ext}"
 
 directories:

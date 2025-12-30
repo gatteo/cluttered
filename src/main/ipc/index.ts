@@ -4,6 +4,10 @@ import { cleanerHandlers } from './cleaner'
 import { settingsHandlers } from './settings'
 import { systemHandlers } from './system'
 import { analyticsHandlers } from './analytics'
+import { licenseHandlers } from './license'
+import { quotaHandlers } from './quota'
+import { schedulerHandlers } from './scheduler'
+import { autoCleanHandlers } from './autoClean'
 
 export function registerIPCHandlers(mainWindow: BrowserWindow) {
   // Scanner
@@ -41,4 +45,26 @@ export function registerIPCHandlers(mainWindow: BrowserWindow) {
   // Analytics
   ipcMain.handle('analytics:track', (event, eventName, properties) => analyticsHandlers.track(eventName, properties))
   ipcMain.handle('analytics:updateEnabled', (event, enabled) => analyticsHandlers.updateEnabled(enabled))
+
+  // License
+  ipcMain.handle('license:isPro', () => licenseHandlers.isPro())
+  ipcMain.handle('license:get', () => licenseHandlers.get())
+  ipcMain.handle('license:activate', (event, key: string) => licenseHandlers.activate(key))
+  ipcMain.handle('license:deactivate', () => licenseHandlers.deactivate())
+  ipcMain.handle('license:getCheckoutUrl', (event, email?: string) => licenseHandlers.getCheckoutUrl(email))
+  ipcMain.handle('license:openCheckout', (event, email?: string) => licenseHandlers.openCheckout(email))
+
+  // Quota
+  ipcMain.handle('quota:get', () => quotaHandlers.get())
+  ipcMain.handle('quota:canClean', (event, bytes: number) => quotaHandlers.canClean(bytes))
+
+  // Scheduler
+  ipcMain.handle('scheduler:getSettings', () => schedulerHandlers.getSettings())
+  ipcMain.handle('scheduler:saveSettings', (event, settings) => schedulerHandlers.saveSettings(settings))
+  ipcMain.handle('scheduler:runNow', () => schedulerHandlers.runNow())
+
+  // Auto-clean
+  ipcMain.handle('autoClean:getSettings', () => autoCleanHandlers.getSettings())
+  ipcMain.handle('autoClean:saveSettings', (event, settings) => autoCleanHandlers.saveSettings(settings))
+  ipcMain.handle('autoClean:runNow', () => autoCleanHandlers.runNow())
 }

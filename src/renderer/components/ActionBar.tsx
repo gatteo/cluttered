@@ -1,10 +1,13 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Trash2, Loader2, RefreshCw, Info } from 'lucide-react'
 import { useProjectStore } from '../store/projectStore'
 import { useScanStore } from '../store/scanStore'
 import { useCleanStore } from '../store/cleanStore'
+import { useQuotaStore } from '../store/quotaStore'
 import { formatBytes } from '../utils/format'
+import { QuotaBar } from './QuotaBar'
+import { UpgradeModal } from './UpgradeModal'
 
 interface ActionBarProps {
   onScan: () => void
@@ -14,9 +17,25 @@ interface ActionBarProps {
 
 export function ActionBar({ onScan, isScanning, hasResults }: ActionBarProps) {
   const { selectedIds } = useProjectStore()
-  const { isCleaning, startClean } = useCleanStore()
+  const { isCleaning, startClean, result: cleanResult } = useCleanStore()
   const scanResult = useScanStore((s) => s.result)
+  const loadQuota = useQuotaStore((s) => s.loadQuota)
   const [showInfo, setShowInfo] = useState(false)
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false)
+
+  // Check for quota error after cleaning
+  useEffect(() => {
+    if (cleanResult?.errors?.some((e) => e.projectId === 'quota')) {
+      setShowUpgradeModal(true)
+    }
+  }, [cleanResult])
+
+  // Refresh quota after successful cleaning
+  useEffect(() => {
+    if (cleanResult?.success && cleanResult.bytesFreed > 0) {
+      loadQuota()
+    }
+  }, [cleanResult, loadQuota])
 
   // Get all cleanable projects (non-protected)
   const { cleanableProjects, cleanableSize, protectedCount, protectedSize } = useMemo(() => {
@@ -79,6 +98,11 @@ export function ActionBar({ onScan, isScanning, hasResults }: ActionBarProps) {
         ) : (
           // Has results - show Clean as primary
           <>
+            {/* Quota bar for free users */}
+            {/* <div className="w-full max-w-xs mb-2">
+              <QuotaBar />
+            </div> */}
+
             <motion.button
               className={`btn-primary px-4 py-2 rounded-xl font-medium flex items-center gap-2 text-lg ${
                 !hasCleanable && !hasSelection ? 'opacity-50 cursor-not-allowed' : ''
@@ -141,6 +165,9 @@ export function ActionBar({ onScan, isScanning, hasResults }: ActionBarProps) {
           </>
         )}
       </div>
+
+      {/* Upgrade modal for quota exceeded */}
+      <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
     </div>
   )
 }

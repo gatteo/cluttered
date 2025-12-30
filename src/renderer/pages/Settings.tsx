@@ -1,6 +1,6 @@
 import { useState, useEffect, ReactNode } from 'react'
 import { motion } from 'framer-motion'
-import { Settings as SettingsIcon, Search, Target, Trash2, Package, History, Info, ArrowLeft, RotateCcw, Inbox } from 'lucide-react'
+import { Settings as SettingsIcon, Search, Target, Trash2, Package, History, Info, ArrowLeft, RotateCcw, Inbox, Shield, Zap } from 'lucide-react'
 import { useSettingsStore } from '../store/settingsStore'
 import { useUIStore } from '../store/uiStore'
 import { GeneralSettings } from '../components/settings/GeneralSettings'
@@ -8,10 +8,12 @@ import { ScanningSettings } from '../components/settings/ScanningSettings'
 import { DetectionSettings } from '../components/settings/DetectionSettings'
 import { CleanupSettings } from '../components/settings/CleanupSettings'
 import { EcosystemSettings } from '../components/settings/EcosystemSettings'
+import { LicenseSettings } from '../components/settings/LicenseSettings'
+import { AutomationSettings } from '../components/settings/AutomationSettings'
 import { StatisticsDashboard } from '../components/StatisticsDashboard'
 import { formatBytes, formatRelativeTime } from '../utils/format'
 
-type SettingsTab = 'general' | 'scanning' | 'detection' | 'cleanup' | 'ecosystems' | 'history' | 'about'
+type SettingsTab = 'general' | 'scanning' | 'detection' | 'cleanup' | 'ecosystems' | 'automation' | 'license' | 'history' | 'about'
 
 interface DeletionLogEntry {
   id: string
@@ -39,6 +41,8 @@ export function Settings() {
     { id: 'detection', label: 'Detection', icon: <Target size={16} /> },
     { id: 'cleanup', label: 'Cleanup', icon: <Trash2 size={16} /> },
     { id: 'ecosystems', label: 'Ecosystems', icon: <Package size={16} /> },
+    { id: 'automation', label: 'Automation', icon: <Zap size={16} /> },
+    { id: 'license', label: 'License', icon: <Shield size={16} /> },
     { id: 'history', label: 'History', icon: <History size={16} /> },
     { id: 'about', label: 'About', icon: <Info size={16} /> },
   ]
@@ -79,6 +83,8 @@ export function Settings() {
             {activeTab === 'detection' && <DetectionSettings />}
             {activeTab === 'cleanup' && <CleanupSettings />}
             {activeTab === 'ecosystems' && <EcosystemSettings />}
+            {activeTab === 'automation' && <AutomationSettings />}
+            {activeTab === 'license' && <LicenseSettings />}
             {activeTab === 'history' && <HistorySection />}
             {activeTab === 'about' && <AboutSection />}
           </motion.div>
