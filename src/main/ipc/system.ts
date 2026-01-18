@@ -4,6 +4,7 @@ import { promisify } from 'util'
 import checkDiskSpace from 'check-disk-space'
 import { homedir } from 'os'
 import { DiskSpace } from '../../shared/types'
+import { sandboxService, isMASBuild } from '../services/sandboxService'
 
 const execAsync = promisify(exec)
 
@@ -53,6 +54,11 @@ export const systemHandlers = {
   },
 
   async selectFolder(mainWindow: BrowserWindow): Promise<string | null> {
+    // For MAS builds, use the sandbox service to create security-scoped bookmarks
+    if (isMASBuild()) {
+      return sandboxService.selectAndBookmarkFolder(mainWindow)
+    }
+
     const result = await dialog.showOpenDialog(mainWindow, {
       properties: ['openDirectory', 'createDirectory'],
       title: 'Select Folder',
@@ -65,10 +71,34 @@ export const systemHandlers = {
     return result.filePaths[0]
   },
 
-  async triggerHaptic(pattern: 'light' | 'medium' | 'heavy'): Promise<void> {
+  async isMASBuild(): Promise<boolean> {
+    return isMASBuild()
+  },
+
+  async hasAccessiblePaths(): Promise<boolean> {
+    if (!isMASBuild()) return true
+    return sandboxService.hasStoredBookmarks()
+  },
+
+  async getAccessiblePaths(): Promise<string[]> {
+    if (!isMASBuild()) return []
+    return sandboxService.getAccessiblePaths()
+  },
+
+  async removeAccessiblePath(path: string): Promise<void> {
+    if (isMASBuild()) {
+      sandboxService.removeBookmark(path)
+    }
+  },
+
+  async triggerHaptic(_pattern: 'light' | 'medium' | 'heavy'): Promise<void> {
     // Haptic feedback is primarily for macOS trackpads
     // This is a no-op on other platforms
     // The actual implementation would require native modules
     // For MVP, we'll skip actual haptic implementation
+  },
+
+  async openExternal(url: string): Promise<void> {
+    await shell.openExternal(url)
   },
 }

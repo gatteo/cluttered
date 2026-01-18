@@ -1,4 +1,4 @@
-import { ipcMain, BrowserWindow } from 'electron'
+import { ipcMain, BrowserWindow, app } from 'electron'
 import { scannerHandlers } from './scanner'
 import { cleanerHandlers } from './cleaner'
 import { settingsHandlers } from './settings'
@@ -38,9 +38,15 @@ export function registerIPCHandlers(mainWindow: BrowserWindow) {
   ipcMain.handle('system:getDiskSpace', () => systemHandlers.getDiskSpace())
   ipcMain.handle('system:selectFolder', () => systemHandlers.selectFolder(mainWindow))
   ipcMain.handle('system:haptic', (event, pattern) => systemHandlers.triggerHaptic(pattern))
+  ipcMain.handle('system:openExternal', (event, url) => systemHandlers.openExternal(url))
+  ipcMain.handle('system:isMASBuild', () => systemHandlers.isMASBuild())
+  ipcMain.handle('system:hasAccessiblePaths', () => systemHandlers.hasAccessiblePaths())
+  ipcMain.handle('system:getAccessiblePaths', () => systemHandlers.getAccessiblePaths())
+  ipcMain.handle('system:removeAccessiblePath', (event, path) => systemHandlers.removeAccessiblePath(path))
 
   // App state
   ipcMain.handle('app:isFirstRun', () => settingsHandlers.isFirstRun())
+  ipcMain.handle('app:getVersion', () => app.getVersion())
 
   // Analytics
   ipcMain.handle('analytics:track', (event, eventName, properties) => analyticsHandlers.track(eventName, properties))
