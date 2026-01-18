@@ -24,7 +24,7 @@ echo -e "${YELLOW}=======================================${NC}"
 
 # Step 1: Clean previous builds
 echo -e "\n${GREEN}[1/5] Cleaning previous builds...${NC}"
-rm -rf "$RELEASE_DIR/mac-universal" "$RELEASE_DIR/mac-arm64" "$RELEASE_DIR/mac-x64" 2>/dev/null || true
+rm -rf "$RELEASE_DIR/mac-universal" "$RELEASE_DIR/mac-arm64" "$RELEASE_DIR/mac" 2>/dev/null || true
 rm -f "$RELEASE_DIR"/*.dmg "$RELEASE_DIR"/*.zip 2>/dev/null || true
 
 # Step 2: Build the app
@@ -43,6 +43,9 @@ for ARCH in "${ARCHS[@]}"; do
     if [ "$ARCH" == "universal" ]; then
         npx electron-builder --mac --universal --config.mac.target=dir
         APP_DIR="mac-universal"
+    elif [ "$ARCH" == "x64" ]; then
+        npx electron-builder --mac --x64 --config.mac.target=dir
+        APP_DIR="mac"  # electron-builder outputs x64 to 'mac', not 'mac-x64'
     else
         npx electron-builder --mac --$ARCH --config.mac.target=dir
         APP_DIR="mac-$ARCH"
@@ -64,6 +67,8 @@ echo -e "\n${GREEN}[4/5] Notarizing apps (this may take several minutes)...${NC}
 for ARCH in "${ARCHS[@]}"; do
     if [ "$ARCH" == "universal" ]; then
         APP_DIR="mac-universal"
+    elif [ "$ARCH" == "x64" ]; then
+        APP_DIR="mac"
     else
         APP_DIR="mac-$ARCH"
     fi
@@ -102,6 +107,8 @@ echo -e "\n${GREEN}[5/5] Creating DMGs...${NC}"
 for ARCH in "${ARCHS[@]}"; do
     if [ "$ARCH" == "universal" ]; then
         APP_DIR="mac-universal"
+    elif [ "$ARCH" == "x64" ]; then
+        APP_DIR="mac"
     else
         APP_DIR="mac-$ARCH"
     fi
@@ -111,11 +118,16 @@ for ARCH in "${ARCHS[@]}"; do
 
     echo -e "\n${YELLOW}  Creating $ARCH DMG...${NC}"
 
-    npx electron-builder --mac dmg --prepackaged "$APP_PATH" --config.artifactName="\${productName}-\${version}-$ARCH.\${ext}"
+    # Create DMG with specific name
+    npx electron-builder --mac dmg --prepackaged "$APP_PATH" --config.artifactName="$DMG_NAME"
 
-    # electron-builder might name it differently, find and rename if needed
-    if [ -f "$RELEASE_DIR/$APP_NAME-$VERSION-arm64.dmg" ] && [ "$ARCH" != "arm64" ]; then
-        mv "$RELEASE_DIR/$APP_NAME-$VERSION-arm64.dmg" "$RELEASE_DIR/$DMG_NAME"
+    # electron-builder may output with detected arch name, rename if needed
+    if [ ! -f "$RELEASE_DIR/$DMG_NAME" ]; then
+        # Find the most recent DMG and rename it
+        LATEST_DMG=$(ls -t "$RELEASE_DIR"/*.dmg 2>/dev/null | head -1)
+        if [ -n "$LATEST_DMG" ] && [ "$LATEST_DMG" != "$RELEASE_DIR/$DMG_NAME" ]; then
+            mv "$LATEST_DMG" "$RELEASE_DIR/$DMG_NAME"
+        fi
     fi
 
     if [ -f "$RELEASE_DIR/$DMG_NAME" ]; then
