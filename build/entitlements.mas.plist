@@ -22,10 +22,8 @@
     <key>com.apple.security.network.client</key>
     <true/>
 
-    <!-- Read-only access to home directory for scanning -->
-    <key>com.apple.security.temporary-exception.files.home-relative-path.read-only</key>
-    <array>
-        <string>/</string>
-    </array>
+    <!-- Security-scoped bookmarks for persisting folder access -->
+    <key>com.apple.security.files.bookmarks.app-scope</key>
+    <true/>
 </dict>
 </plist>

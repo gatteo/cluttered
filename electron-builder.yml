@@ -11,6 +11,10 @@ files:
   - dist/**/*
   - package.json
 
+extraResources:
+  - from: ".env"
+    to: ".env"
+
 mac:
   category: public.app-category.developer-tools
   icon: assets/icons/icon-border.icns
@@ -23,9 +27,13 @@ mac:
   target:
     - target: dmg
       arch:
+        - x64
+        - arm64
         - universal
     - target: zip
       arch:
+        - x64
+        - arm64
         - universal
 
 # Mac App Store configuration
