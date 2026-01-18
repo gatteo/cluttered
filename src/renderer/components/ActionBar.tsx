@@ -6,7 +6,6 @@ import { useScanStore } from '../store/scanStore'
 import { useCleanStore } from '../store/cleanStore'
 import { useQuotaStore } from '../store/quotaStore'
 import { formatBytes } from '../utils/format'
-import { QuotaBar } from './QuotaBar'
 import { UpgradeModal } from './UpgradeModal'
 
 interface ActionBarProps {

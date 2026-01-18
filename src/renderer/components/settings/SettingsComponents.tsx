@@ -175,7 +175,7 @@ interface PathListManagerProps {
   defaultPath?: string
 }
 
-export function PathListManager({ paths, onChange, placeholder, defaultPath }: PathListManagerProps) {
+export function PathListManager({ paths, onChange, placeholder, defaultPath: _defaultPath }: PathListManagerProps) {
   const [newPath, setNewPath] = useState('')
 
   const addPath = () => {

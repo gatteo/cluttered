@@ -41,7 +41,7 @@ export function HeroStats({ totalRecoverable, projectCount }: HeroStatsProps) {
               />
             </div>
             <p className="text-text-secondary text-lg">
-              recoverable across <span className="text-white font-medium">{projectCount}</span> projects
+              of clutter across <span className="text-white font-medium">{projectCount}</span> projects
             </p>
           </motion.div>
 

@@ -21,7 +21,9 @@ interface EcosystemConfig {
   color: string
 }
 
-export const ecosystemConfigs: Record<EcosystemId, EcosystemConfig> = {
+export type { EcosystemConfig }
+
+export const ecosystemConfigs: Record<EcosystemId, EcosystemConfig> & Record<string, EcosystemConfig | undefined> = {
   'react-native': {
     id: 'react-native',
     name: 'React Native',

@@ -1,5 +1,5 @@
 import { useSettingsStore } from '../../store/settingsStore'
-import { ecosystemConfigs } from '../../config/ecosystems'
+import { ecosystemConfigs, EcosystemConfig } from '../../config/ecosystems'
 
 export function EcosystemSettings() {
   const { settings, updateSettings } = useSettingsStore()
@@ -15,7 +15,7 @@ export function EcosystemSettings() {
     })
   }
 
-  const ecosystems = Object.values(ecosystemConfigs)
+  const ecosystems = Object.values(ecosystemConfigs).filter((eco): eco is EcosystemConfig => eco !== undefined)
 
   return (
     <div className="space-y-6 max-w-xl">

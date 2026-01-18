@@ -1,5 +1,5 @@
 import { memo, useCallback } from 'react'
-import { EcosystemSummary, Project } from '../types'
+import { EcosystemSummary, EcosystemId, Project } from '../types'
 import { formatBytes } from '../utils/format'
 import { useUIStore } from '../store/uiStore'
 import { useProjectStore } from '../store/projectStore'
@@ -18,16 +18,19 @@ export const EcosystemCard = memo(function EcosystemCard({ ecosystem, disabled =
   const goToEcosystem = useUIStore((s) => s.goToEcosystem)
   const selectedIds = useProjectStore((s) => s.selectedIds)
   const projects = useScanStore((s) => s.result?.projects ?? EMPTY_PROJECTS)
-  const config = ecosystemConfigs[ecosystem.ecosystem]
+  const config = ecosystemConfigs[ecosystem.ecosystem as EcosystemId]
 
   // Count selected projects in this ecosystem
   const selectedInEcosystem = projects.filter((p) => p.ecosystem === ecosystem.ecosystem && selectedIds.has(p.id)).length
 
   const handleClick = useCallback(() => {
-    if (!disabled) {
-      goToEcosystem(ecosystem.ecosystem)
+    if (!disabled && config) {
+      goToEcosystem(ecosystem.ecosystem as EcosystemId)
     }
-  }, [disabled, goToEcosystem, ecosystem.ecosystem])
+  }, [disabled, goToEcosystem, ecosystem.ecosystem, config])
+
+  // Handle unknown ecosystem
+  if (!config) return null
 
   return (
     <button
