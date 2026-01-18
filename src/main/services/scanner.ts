@@ -1,10 +1,12 @@
-import { readdir, stat, access } from 'fs/promises'
+import { readdir, access } from 'fs/promises'
 import { join, basename } from 'path'
 import { homedir } from 'os'
-import { Project, ScanOptions, ScanProgress, ScanResult, EcosystemId, DetectionSettings } from '../../shared/types'
+import { Project, ScanOptions, ScanProgress, ScanResult, EcosystemId } from '../../shared/types'
+import { buildEcosystemSummary } from '../../shared/utils'
 import { ecosystemRegistry } from '../ecosystems'
 import { settingsRepo } from '../database/repositories/settings'
 import { BaseService } from './base'
+import { sandboxService, isMASBuild } from './sandboxService'
 
 export class ScannerService extends BaseService {
   private isScanning = false
@@ -25,6 +27,11 @@ export class ScannerService extends BaseService {
 
     const startTime = Date.now()
 
+    // Start accessing security-scoped bookmarks for MAS builds
+    if (isMASBuild()) {
+      sandboxService.startAccessingBookmarks()
+    }
+
     try {
       // Phase 1: Discover projects
       console.log('[ScannerService] Starting discovery phase')
@@ -35,8 +42,13 @@ export class ScannerService extends BaseService {
         ecosystemCounts: {},
       })
 
-      // Check if paths are provided, fallback to home directory
+      // Check if paths are provided
       if (!options.paths || options.paths.length === 0) {
+        if (isMASBuild()) {
+          // For MAS builds, we can't access home directory without user selection
+          console.warn('[ScannerService] No scan paths provided for MAS build')
+          return this.buildResult([], Date.now() - startTime)
+        }
         console.warn('[ScannerService] No scan paths provided, falling back to home directory')
         options.paths = [homedir()]
       }
@@ -100,6 +112,10 @@ export class ScannerService extends BaseService {
       console.error('[ScannerService] Scan error:', error)
       throw error
     } finally {
+      // Stop accessing security-scoped bookmarks for MAS builds
+      if (isMASBuild()) {
+        sandboxService.stopAccessingBookmarks()
+      }
       this.isScanning = false
       console.log('[ScannerService] Scan finished, isScanning reset to false')
     }
@@ -168,8 +184,9 @@ export class ScannerService extends BaseService {
 
             queue.push(subPath)
           }
-        } catch {
-          // Permission denied or other error - skip
+        } catch (error) {
+          // Log but continue - permission denied or other filesystem error
+          console.warn(`[ScannerService] Cannot read directory ${currentPath}:`, error)
         }
       }
     }
@@ -249,7 +266,8 @@ export class ScannerService extends BaseService {
         totalSize,
         artifacts,
       }
-    } catch {
+    } catch (error) {
+      console.warn(`[ScannerService] Failed to analyze project ${project.path}:`, error)
       return project
     }
   }
@@ -306,7 +324,7 @@ export class ScannerService extends BaseService {
   }
 
   private buildResult(projects: Project[], duration: number): ScanResult {
-    const ecosystemSummary = this.buildEcosystemSummary(projects)
+    const ecosystemSummary = buildEcosystemSummary(projects)
 
     return {
       projects,
@@ -317,22 +335,6 @@ export class ScannerService extends BaseService {
     }
   }
 
-  private buildEcosystemSummary(projects: Project[]) {
-    const byEcosystem = new Map<EcosystemId, Project[]>()
-
-    for (const project of projects) {
-      const list = byEcosystem.get(project.ecosystem) || []
-      list.push(project)
-      byEcosystem.set(project.ecosystem, list)
-    }
-
-    return Array.from(byEcosystem.entries()).map(([ecosystem, ecosystemProjects]) => ({
-      ecosystem,
-      projectCount: ecosystemProjects.length,
-      totalSize: ecosystemProjects.reduce((sum, p) => sum + p.totalSize, 0),
-      cleanableSize: ecosystemProjects.filter((p) => !p.isProtected).reduce((sum, p) => sum + p.totalSize, 0),
-    }))
-  }
 
   private sendProgress(progress: ScanProgress) {
     this.sendToRenderer('scan:progress', progress)

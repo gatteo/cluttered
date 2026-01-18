@@ -6,6 +6,7 @@ import { deletionLogRepo } from '../database/repositories/deletionLog'
 import { statisticsRepo } from '../database/repositories/statistics'
 import { ProtectionAnalyzer } from './protectionAnalyzer'
 import { quotaService } from './quotaService'
+import { sandboxService, isMASBuild } from './sandboxService'
 
 export class CleanerService extends BaseService {
   private protectionAnalyzer: ProtectionAnalyzer
@@ -40,6 +41,11 @@ export class CleanerService extends BaseService {
 
     this.isCleaning = true
     this.shouldCancel = false
+
+    // Start accessing security-scoped bookmarks for MAS builds
+    if (isMASBuild()) {
+      sandboxService.startAccessingBookmarks()
+    }
 
     const result: CleanResult = {
       success: true,
@@ -100,6 +106,10 @@ export class CleanerService extends BaseService {
 
       return result
     } finally {
+      // Stop accessing security-scoped bookmarks for MAS builds
+      if (isMASBuild()) {
+        sandboxService.stopAccessingBookmarks()
+      }
       this.isCleaning = false
     }
   }

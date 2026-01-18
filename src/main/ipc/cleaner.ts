@@ -233,8 +233,8 @@ export const cleanerHandlers = {
         result.bytesFreed += totalSize
         result.filesDeleted += artifacts.length
         result.projectsCleaned.push(project.id)
-      } catch {
-        // Skip projects we can't calculate
+      } catch (error) {
+        console.warn(`[Cleaner] Failed to calculate size for project ${project.path}:`, error)
       }
     }
 

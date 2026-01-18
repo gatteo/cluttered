@@ -1,5 +1,4 @@
 import { BaseEcosystemPlugin } from '../base'
-import { join } from 'path'
 import { readdir } from 'fs/promises'
 
 export class DotnetPlugin extends BaseEcosystemPlugin {

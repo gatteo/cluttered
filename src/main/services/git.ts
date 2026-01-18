@@ -17,7 +17,8 @@ export class GitService {
     try {
       await stat(join(projectPath, '.git'))
     } catch {
-      return null // Not a git repo
+      // Not a git repo - this is expected for many projects
+      return null
     }
 
     const git: SimpleGit = simpleGit(projectPath)
@@ -37,8 +38,9 @@ export class GitService {
         currentBranch: status.current || undefined,
         remoteUrl: remotes[0]?.refs?.fetch,
       }
-    } catch {
-      // Git command failed
+    } catch (error) {
+      // Git command failed - return safe defaults
+      console.warn(`[GitService] Failed to get git info for ${projectPath}:`, error)
       return {
         isGitRepo: true,
         hasUncommittedChanges: false,

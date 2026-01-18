@@ -1,4 +1,4 @@
-import { EcosystemId, ProjectArtifact, CleanResult } from '../../shared/types'
+import { ProjectArtifact, CleanResult } from '../../shared/types'
 
 export interface ProjectActivity {
   lastModified: Date
