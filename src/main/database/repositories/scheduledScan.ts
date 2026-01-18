@@ -12,6 +12,17 @@ export interface ScheduledScanSettings {
   lastRunAt: Date | null
 }
 
+interface ScheduledScanRow {
+  id: number
+  enabled: number
+  frequency: string
+  time_hour: number
+  time_minute: number
+  day_of_week: number
+  notify_threshold_bytes: number
+  last_run_at: number | null
+}
+
 const DEFAULT_SETTINGS: ScheduledScanSettings = {
   enabled: false,
   frequency: 'weekly',
@@ -25,7 +36,7 @@ const DEFAULT_SETTINGS: ScheduledScanSettings = {
 export const scheduledScanRepo = {
   get(): ScheduledScanSettings {
     const db = getDatabase()
-    const row = db.prepare('SELECT * FROM scheduled_scan_settings WHERE id = 1').get() as any
+    const row = db.prepare('SELECT * FROM scheduled_scan_settings WHERE id = 1').get() as ScheduledScanRow | undefined
 
     if (!row) {
       return DEFAULT_SETTINGS

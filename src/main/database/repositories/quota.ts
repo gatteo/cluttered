@@ -11,6 +11,14 @@ interface QuotaEntry {
   projectName: string | null
 }
 
+interface QuotaRow {
+  id: number
+  cleaned_at: number
+  bytes_cleaned: number
+  project_id: string | null
+  project_name: string | null
+}
+
 export const quotaRepo = {
   /**
    * Record a cleaning operation.
@@ -89,7 +97,7 @@ export const quotaRepo = {
       LIMIT ?
     `
       )
-      .all(limit) as any[]
+      .all(limit) as QuotaRow[]
 
     return rows.map((row) => ({
       id: row.id,

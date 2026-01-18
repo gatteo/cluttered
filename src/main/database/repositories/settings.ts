@@ -43,27 +43,19 @@ export const settingsRepo = {
   },
 }
 
-function deepMerge<T extends Record<string, any>>(target: T, source: Partial<T>): T {
-  const result = { ...target }
-
-  for (const key in source) {
-    if (source[key] !== undefined) {
-      if (
-        typeof source[key] === 'object' &&
-        source[key] !== null &&
-        !Array.isArray(source[key]) &&
-        typeof target[key] === 'object' &&
-        target[key] !== null
-      ) {
-        result[key] = deepMerge(target[key], source[key] as any)
-      } else if (Array.isArray(source[key]) && (source[key] as any[]).length === 0) {
-        // Don't replace with empty arrays - keep the default
-        // This handles the case where scanPaths was saved as []
-      } else {
-        result[key] = source[key] as any
-      }
-    }
+function deepMerge(target: Settings, source: Partial<Settings>): Settings {
+  return {
+    general: { ...target.general, ...source.general },
+    scanning: {
+      ...target.scanning,
+      ...source.scanning,
+      // Don't replace with empty arrays - keep the default
+      scanPaths: source.scanning?.scanPaths?.length ? source.scanning.scanPaths : target.scanning.scanPaths,
+      excludePaths: source.scanning?.excludePaths?.length ? source.scanning.excludePaths : target.scanning.excludePaths,
+      protectedPaths: source.scanning?.protectedPaths?.length ? source.scanning.protectedPaths : target.scanning.protectedPaths,
+    },
+    detection: { ...target.detection, ...source.detection },
+    cleanup: { ...target.cleanup, ...source.cleanup },
+    ecosystems: { ...target.ecosystems, ...source.ecosystems },
   }
-
-  return result
 }

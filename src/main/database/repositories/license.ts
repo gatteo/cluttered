@@ -1,18 +1,31 @@
 import { getDatabase } from '../index'
 import { License, LicenseProvider } from '../../services/licensing/types'
 
+interface LicenseRow {
+  id: number
+  license_key: string
+  email: string | null
+  provider: string
+  provider_customer_id: string | null
+  provider_transaction_id: string | null
+  purchased_at: number
+  validated_at: number | null
+  is_valid: number
+  raw_data: string | null
+}
+
 export const licenseRepo = {
   get(): License | null {
     const db = getDatabase()
-    const row = db.prepare('SELECT * FROM license WHERE id = 1').get() as any
+    const row = db.prepare('SELECT * FROM license WHERE id = 1').get() as LicenseRow | undefined
     if (!row) return null
 
     return {
       licenseKey: row.license_key,
       email: row.email,
       provider: row.provider as LicenseProvider,
-      providerCustomerId: row.provider_customer_id,
-      providerTransactionId: row.provider_transaction_id,
+      providerCustomerId: row.provider_customer_id ?? undefined,
+      providerTransactionId: row.provider_transaction_id ?? undefined,
       purchasedAt: new Date(row.purchased_at),
       validatedAt: row.validated_at ? new Date(row.validated_at) : undefined,
       isValid: Boolean(row.is_valid),
