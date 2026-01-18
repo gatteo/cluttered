@@ -147,10 +147,6 @@
     @apply bg-surface-elevated border border-white/10 rounded-lg shadow-lg;
   }
 
-  .tooltip-arrow {
-    border-color: transparent;
-    border-top-color: theme('colors.surface.elevated');
-  }
 
   /* Drag region for title bar */
   .app-drag-region {
@@ -160,33 +156,5 @@
   .app-no-drag {
     -webkit-app-region: no-drag;
   }
-
-  /* Glow effects */
-  .glow-purple {
-    box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
-  }
-
-  .glow-green {
-    box-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
-  }
-
-  .glow-pink {
-    box-shadow: 0 0 20px rgba(236, 72, 153, 0.4);
-  }
 }
 
-@layer utilities {
-  /* Text gradient */
-  .text-gradient {
-    @apply bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent;
-  }
-
-  .text-gradient-green {
-    @apply bg-gradient-to-r from-accent-green to-emerald-400 bg-clip-text text-transparent;
-  }
-
-  /* Tabular numbers for counters */
-  .tabular-nums {
-    font-variant-numeric: tabular-nums;
-  }
-}
