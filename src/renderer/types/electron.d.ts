@@ -1,3 +1,17 @@
+// Import shared types - these are the canonical definitions
+// Note: Some types are redefined here with slight variations (e.g., string instead of EcosystemId)
+// because the IPC layer serializes data, and we want to be flexible with what we receive
+import type {
+  CleanOptions,
+  CleanProgress,
+  CleanResult,
+  DiskSpace,
+  Settings,
+} from '../../shared/types'
+
+// Re-export imported types for convenience
+export type { CleanOptions, CleanProgress, CleanResult, DiskSpace, Settings }
+
 export interface ElectronAPI {
   // App info
   getVersion: () => Promise<string>
@@ -31,6 +45,7 @@ export interface ElectronAPI {
   getDiskSpace: () => Promise<DiskSpace>
   selectFolder: () => Promise<string | null>
   triggerHaptic: (pattern: 'light' | 'medium' | 'heavy') => Promise<void>
+  openExternal: (url: string) => Promise<void>
 
   // First run
   isFirstRun: () => Promise<boolean>
@@ -68,9 +83,20 @@ export interface ElectronAPI {
     saveSettings: (settings: Partial<AutoCleanSettings>) => Promise<AutoCleanSettings>
     runNow: () => Promise<AutoCleanResult | null>
   }
+
+  // Sandbox (for Mac App Store builds)
+  sandbox: {
+    isMASBuild: () => Promise<boolean>
+    hasAccessiblePaths: () => Promise<boolean>
+    getAccessiblePaths: () => Promise<string[]>
+    removeAccessiblePath: (path: string) => Promise<void>
+  }
 }
 
-// Types will be fully defined in Task 02
+// ============ IPC-specific types ============
+// These types represent what's actually sent over IPC
+// They use 'string' for ecosystem to be flexible with serialization
+
 interface ScanOptions {
   paths?: string[]
   excludePaths?: string[]
@@ -124,59 +150,6 @@ interface EcosystemSummary {
   cleanableSize: number
 }
 
-interface CleanOptions {
-  projectIds: string[]
-  dryRun: boolean
-  moveToTrash: boolean
-}
-
-interface CleanProgress {
-  currentProject?: string
-  projectsProcessed: number
-  totalProjects: number
-  bytesFreed: number
-  filesDeleted: number
-}
-
-interface CleanResult {
-  success: boolean
-  bytesFreed: number
-  filesDeleted: number
-  projectsCleaned: string[]
-  errors: Array<{ projectId: string; error: string }>
-}
-
-interface Settings {
-  general: {
-    startAtLogin: boolean
-    checkForUpdates: boolean
-    sendAnalytics: boolean
-    theme: 'light' | 'dark' | 'system'
-  }
-  scanning: {
-    scanPaths: string[]
-    excludePaths: string[]
-    protectedPaths: string[]
-    followSymlinks: boolean
-  }
-  detection: {
-    activeThresholdDays: number
-    recentThresholdDays: number
-    staleThresholdDays: number
-    considerGitActivity: boolean
-    considerIDEActivity: boolean
-  }
-  cleanup: {
-    moveToTrash: boolean
-    confirmRecentProjects: boolean
-    soundEffects: boolean
-    hapticFeedback: boolean
-  }
-  ecosystems: {
-    enabled: Record<string, boolean>
-  }
-}
-
 interface Statistics {
   totalBytesFreed: number
   totalProjectsCleaned: number
@@ -195,12 +168,6 @@ interface DeletionLogEntry {
   artifacts: string[]
   totalSize: number
   trashedPath?: string
-}
-
-interface DiskSpace {
-  total: number
-  free: number
-  used: number
 }
 
 interface LicenseInfo {
