@@ -1,4 +1,7 @@
-import { contextBridge, ipcRenderer } from 'electron'
+import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron'
+import type { ScanOptions, ScanProgress, CleanOptions, CleanProgress, Settings } from '../shared/types'
+import type { ScheduledScanSettings } from './database/repositories/scheduledScan'
+import type { AutoCleanSettings } from './database/repositories/autoClean'
 
 // Expose protected methods that allow the renderer process to use
 // ipcRenderer without exposing the entire object
@@ -7,27 +10,27 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getVersion: () => ipcRenderer.invoke('app:getVersion'),
   getPlatform: () => ipcRenderer.invoke('app:getPlatform'),
 
-  // Scanner (will be implemented in Task 03)
-  startScan: (options?: any) => ipcRenderer.invoke('scan:start', options),
+  // Scanner
+  startScan: (options?: Partial<ScanOptions>) => ipcRenderer.invoke('scan:start', options),
   cancelScan: () => ipcRenderer.invoke('scan:cancel'),
   getCachedResults: () => ipcRenderer.invoke('scan:getCached'),
-  onScanProgress: (callback: (progress: any) => void) => {
-    const subscription = (_event: any, data: any) => callback(data)
+  onScanProgress: (callback: (progress: ScanProgress) => void) => {
+    const subscription = (_event: IpcRendererEvent, data: ScanProgress) => callback(data)
     ipcRenderer.on('scan:progress', subscription)
     return () => ipcRenderer.removeListener('scan:progress', subscription)
   },
 
-  // Cleaner (will be implemented in Task 09)
-  cleanProjects: (options: any) => ipcRenderer.invoke('clean:start', options),
-  onCleanProgress: (callback: (progress: any) => void) => {
-    const subscription = (_event: any, data: any) => callback(data)
+  // Cleaner
+  cleanProjects: (options: CleanOptions) => ipcRenderer.invoke('clean:start', options),
+  onCleanProgress: (callback: (progress: CleanProgress) => void) => {
+    const subscription = (_event: IpcRendererEvent, data: CleanProgress) => callback(data)
     ipcRenderer.on('clean:progress', subscription)
     return () => ipcRenderer.removeListener('clean:progress', subscription)
   },
 
-  // Settings (will be implemented in Task 10)
+  // Settings
   getSettings: () => ipcRenderer.invoke('settings:get'),
-  setSettings: (settings: any) => ipcRenderer.invoke('settings:set', settings),
+  setSettings: (settings: Settings) => ipcRenderer.invoke('settings:set', settings),
 
   // Statistics
   getStatistics: () => ipcRenderer.invoke('stats:get'),
@@ -43,6 +46,15 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getDiskSpace: () => ipcRenderer.invoke('system:getDiskSpace'),
   selectFolder: () => ipcRenderer.invoke('system:selectFolder'),
   triggerHaptic: (pattern: string) => ipcRenderer.invoke('system:haptic', pattern),
+  openExternal: (url: string) => ipcRenderer.invoke('system:openExternal', url),
+
+  // Sandbox (for Mac App Store builds)
+  sandbox: {
+    isMASBuild: () => ipcRenderer.invoke('system:isMASBuild'),
+    hasAccessiblePaths: () => ipcRenderer.invoke('system:hasAccessiblePaths'),
+    getAccessiblePaths: () => ipcRenderer.invoke('system:getAccessiblePaths'),
+    removeAccessiblePath: (path: string) => ipcRenderer.invoke('system:removeAccessiblePath', path),
+  },
 
   // First run check
   isFirstRun: () => ipcRenderer.invoke('app:isFirstRun'),
@@ -70,14 +82,14 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Scheduler
   scheduler: {
     getSettings: () => ipcRenderer.invoke('scheduler:getSettings'),
-    saveSettings: (settings: any) => ipcRenderer.invoke('scheduler:saveSettings', settings),
+    saveSettings: (settings: Partial<ScheduledScanSettings>) => ipcRenderer.invoke('scheduler:saveSettings', settings),
     runNow: () => ipcRenderer.invoke('scheduler:runNow'),
   },
 
   // Auto-clean
   autoClean: {
     getSettings: () => ipcRenderer.invoke('autoClean:getSettings'),
-    saveSettings: (settings: any) => ipcRenderer.invoke('autoClean:saveSettings', settings),
+    saveSettings: (settings: Partial<AutoCleanSettings>) => ipcRenderer.invoke('autoClean:saveSettings', settings),
     runNow: () => ipcRenderer.invoke('autoClean:runNow'),
   },
 })
