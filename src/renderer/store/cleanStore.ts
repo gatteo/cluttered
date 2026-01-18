@@ -33,7 +33,7 @@ interface CleanState {
   reset: () => void
 }
 
-export const useCleanStore = create<CleanState>((set, get) => ({
+export const useCleanStore = create<CleanState>((set, _get) => ({
   isCleaning: false,
   isComplete: false,
   progress: null,

@@ -1,7 +1,7 @@
 import { create } from 'zustand'
+import { EcosystemId } from '../types'
 
 type ViewType = 'dashboard' | 'ecosystem' | 'settings'
-type EcosystemId = string
 
 interface UIState {
   currentView: ViewType

@@ -88,26 +88,37 @@ type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P]
 }
 
-function deepMerge<T extends Record<string, any>>(target: T, source: DeepPartial<T>): T {
-  const result = { ...target }
-
-  for (const key in source) {
-    if (source[key] !== undefined) {
-      if (
-        typeof source[key] === 'object' &&
-        source[key] !== null &&
-        !Array.isArray(source[key]) &&
-        typeof target[key] === 'object' &&
-        target[key] !== null
-      ) {
-        result[key] = deepMerge(target[key], source[key] as any)
-      } else {
-        result[key] = source[key] as any
-      }
-    }
+function deepMerge(target: Settings, source: DeepPartial<Settings>): Settings {
+  return {
+    general: {
+      startAtLogin: source.general?.startAtLogin ?? target.general.startAtLogin,
+      checkForUpdates: source.general?.checkForUpdates ?? target.general.checkForUpdates,
+      sendAnalytics: source.general?.sendAnalytics ?? target.general.sendAnalytics,
+      theme: source.general?.theme ?? target.general.theme,
+    },
+    scanning: {
+      scanPaths: (source.scanning?.scanPaths as string[] | undefined) ?? target.scanning.scanPaths,
+      excludePaths: (source.scanning?.excludePaths as string[] | undefined) ?? target.scanning.excludePaths,
+      protectedPaths: (source.scanning?.protectedPaths as string[] | undefined) ?? target.scanning.protectedPaths,
+      followSymlinks: source.scanning?.followSymlinks ?? target.scanning.followSymlinks,
+    },
+    detection: {
+      activeThresholdDays: source.detection?.activeThresholdDays ?? target.detection.activeThresholdDays,
+      recentThresholdDays: source.detection?.recentThresholdDays ?? target.detection.recentThresholdDays,
+      staleThresholdDays: source.detection?.staleThresholdDays ?? target.detection.staleThresholdDays,
+      considerGitActivity: source.detection?.considerGitActivity ?? target.detection.considerGitActivity,
+      considerIDEActivity: source.detection?.considerIDEActivity ?? target.detection.considerIDEActivity,
+    },
+    cleanup: {
+      moveToTrash: source.cleanup?.moveToTrash ?? target.cleanup.moveToTrash,
+      confirmRecentProjects: source.cleanup?.confirmRecentProjects ?? target.cleanup.confirmRecentProjects,
+      soundEffects: source.cleanup?.soundEffects ?? target.cleanup.soundEffects,
+      hapticFeedback: source.cleanup?.hapticFeedback ?? target.cleanup.hapticFeedback,
+    },
+    ecosystems: {
+      enabled: { ...target.ecosystems.enabled, ...(source.ecosystems?.enabled as Record<string, boolean> | undefined) },
+    },
   }
-
-  return result
 }
 
 export const useSettingsStore = create<SettingsState>((set, get) => ({
