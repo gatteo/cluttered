@@ -1,6 +1,7 @@
 import { useState, useEffect, ReactNode } from 'react'
 import { motion } from 'framer-motion'
 import { Settings as SettingsIcon, Search, Target, Trash2, Package, History, Info, ArrowLeft, RotateCcw, Inbox, Shield, Zap } from 'lucide-react'
+import appIcon from '../assets/icons/app-icon.png'
 import { useSettingsStore } from '../store/settingsStore'
 import { useUIStore } from '../store/uiStore'
 import { GeneralSettings } from '../components/settings/GeneralSettings'
@@ -24,6 +25,10 @@ interface DeletionLogEntry {
   artifacts: string[]
   totalSize: number
   trashedPath?: string
+}
+
+interface DeletionLogEntryRaw extends Omit<DeletionLogEntry, 'timestamp'> {
+  timestamp: Date | string | number
 }
 
 export function Settings() {
@@ -101,7 +106,7 @@ function HistorySection() {
   useEffect(() => {
     window.electronAPI.getDeletionLog().then((data) => {
       setEntries(
-        data.map((e: any) => ({
+        data.map((e: DeletionLogEntryRaw) => ({
           ...e,
           timestamp: new Date(e.timestamp),
         }))
@@ -160,28 +165,46 @@ function HistorySection() {
 }
 
 function AboutSection() {
+  const [version, setVersion] = useState<string>('')
+
+  useEffect(() => {
+    window.electronAPI.getVersion().then(setVersion).catch(() => setVersion('Unknown'))
+  }, [])
+
   return (
-    <div className="max-w-md">
+    <div className="max-w-xl">
       <div className="text-center mb-8">
-        <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-accent-purple to-accent-pink flex items-center justify-center">
-          <Trash2 size={40} className="text-white" />
-        </div>
-        <h1 className="text-2xl font-bold mt-4">Cluttered</h1>
-        <p className="text-text-muted">Version 1.0.0-beta.1</p>
+        <img src={appIcon} alt="Cluttered" className="w-24 h-24 mx-auto mb-4" />
+        <h1 className="text-2xl font-bold">Cluttered</h1>
+        <p className="text-text-muted">Version {version}</p>
       </div>
 
       <StatisticsDashboard />
 
       <div className="mt-8 text-center text-text-muted text-sm">
-        <p>Made with care for developers</p>
+        <p>
+          Made with care for builders by{' '}
+          <button
+            onClick={() => window.electronAPI.openExternal('https://matteogiardino.com/')}
+            className="text-accent-purple hover:underline"
+          >
+            Matteo Giardino
+          </button>
+        </p>
         <p className="mt-4">
-          <a href="#" className="text-accent-purple hover:underline">
+          <button
+            onClick={() => window.electronAPI.openExternal('https://github.com/gatteo/cluttered/issues')}
+            className="text-accent-purple hover:underline"
+          >
             Report an issue
-          </a>
+          </button>
           {' - '}
-          <a href="#" className="text-accent-purple hover:underline">
+          <button
+            onClick={() => window.electronAPI.openExternal('https://github.com/gatteo/cluttered')}
+            className="text-accent-purple hover:underline"
+          >
             View on GitHub
-          </a>
+          </button>
         </p>
       </div>
     </div>
