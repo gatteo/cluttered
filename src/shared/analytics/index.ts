@@ -1,4 +1,5 @@
-export { analytics, ProviderType } from './analytics'
+export { analytics } from './analytics'
+export type { ProviderType } from './analytics'
 export * from './types'
 export { AnalyticsProvider } from './providers/base'
 export { NoopProvider } from './providers/noop'
