@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { EcosystemId } from '../types'
 
-type ViewType = 'dashboard' | 'ecosystem' | 'settings'
+type ViewType = 'dashboard' | 'ecosystem' | 'globalCaches' | 'settings'
 
 interface UIState {
   currentView: ViewType
@@ -13,6 +13,7 @@ interface UIState {
   setView: (view: ViewType) => void
   setSelectedEcosystem: (ecosystem: EcosystemId | null) => void
   goToEcosystem: (ecosystem: EcosystemId) => void
+  goToGlobalCaches: () => void
   goBack: () => void
   showConfirm: () => void
   hideConfirm: () => void
@@ -35,6 +36,8 @@ export const useUIStore = create<UIState>((set) => ({
       currentView: 'ecosystem',
       selectedEcosystem: ecosystem,
     }),
+
+  goToGlobalCaches: () => set({ currentView: 'globalCaches' }),
 
   goBack: () =>
     set({

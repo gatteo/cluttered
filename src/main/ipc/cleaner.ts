@@ -1,7 +1,9 @@
 import { BrowserWindow } from 'electron'
+import { shell } from 'electron'
 import { exec } from 'child_process'
 import { promisify } from 'util'
 import { basename, dirname } from 'path'
+import { access } from 'fs/promises'
 import { CleanOptions, CleanResult, DeletionLogEntry, Project } from '../../shared/types'
 import { scanCacheRepo } from '../database/repositories/scanCache'
 import { deletionLogRepo } from '../database/repositories/deletionLog'
@@ -243,6 +245,73 @@ export const cleanerHandlers = {
 
   getDeletionLog(): DeletionLogEntry[] {
     return deletionLogRepo.getRecent(30)
+  },
+
+  async cleanGlobalCaches(
+    cacheIds: string[]
+  ): Promise<{ success: boolean; bytesFreed: number; pathsCleaned: string[]; errors: string[] }> {
+    console.log('[Cleaner] ========== CLEAN GLOBAL CACHES ==========')
+    console.log('[Cleaner] Cache IDs to clean:', cacheIds.length)
+
+    if (isCleaning) {
+      throw new Error('Cleaning already in progress')
+    }
+
+    isCleaning = true
+
+    const result = {
+      success: true,
+      bytesFreed: 0,
+      pathsCleaned: [] as string[],
+      errors: [] as string[],
+    }
+
+    try {
+      // Look up cache items from the database (trusted source)
+      const items = scanCacheRepo.getGlobalCachesByIds(cacheIds)
+      console.log('[Cleaner] Found', items.length, 'caches in database')
+
+      for (const item of items) {
+        try {
+          if (item.cleanCommand) {
+            // Use custom clean command (e.g., xcrun simctl runtime delete)
+            console.log(`[Cleaner] Running clean command: ${item.cleanCommand}`)
+            await execAsync(item.cleanCommand, { timeout: 120000 })
+
+            result.bytesFreed += item.size
+            result.pathsCleaned.push(item.path)
+            console.log(`[Cleaner] Successfully cleaned via command: ${item.path}`)
+          } else {
+            // Default: move directory to trash
+            await access(item.path)
+
+            const { stdout } = await execAsync(`du -sk "${item.path}" 2>/dev/null`)
+            const sizeKB = parseInt(stdout.split('\t')[0], 10)
+            const size = !isNaN(sizeKB) ? sizeKB * 1024 : 0
+
+            console.log(`[Cleaner] Moving to trash: ${item.path} (${size} bytes)`)
+            await shell.trashItem(item.path)
+
+            result.bytesFreed += size
+            result.pathsCleaned.push(item.path)
+            console.log(`[Cleaner] Successfully cleaned: ${item.path}`)
+          }
+        } catch (error) {
+          console.error(`[Cleaner] Failed to clean ${item.path}:`, error)
+          result.errors.push(`${item.path}: ${String(error)}`)
+        }
+      }
+
+      // Update statistics
+      if (result.bytesFreed > 0) {
+        statisticsRepo.recordCleanup(result.bytesFreed, 0)
+      }
+
+      console.log(`[Cleaner] Global cache clean complete. Freed ${result.bytesFreed} bytes`)
+      return result
+    } finally {
+      isCleaning = false
+    }
   },
 
   async restore(entryId: string): Promise<boolean> {

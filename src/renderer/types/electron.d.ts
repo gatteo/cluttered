@@ -1,13 +1,7 @@
 // Import shared types - these are the canonical definitions
 // Note: Some types are redefined here with slight variations (e.g., string instead of EcosystemId)
 // because the IPC layer serializes data, and we want to be flexible with what we receive
-import type {
-  CleanOptions,
-  CleanProgress,
-  CleanResult,
-  DiskSpace,
-  Settings,
-} from '../../shared/types'
+import type { CleanOptions, CleanProgress, CleanResult, DiskSpace, Settings } from '../../shared/types'
 
 // Re-export imported types for convenience
 export type { CleanOptions, CleanProgress, CleanResult, DiskSpace, Settings }
@@ -20,11 +14,12 @@ export interface ElectronAPI {
   // Scanner
   startScan: (options?: ScanOptions) => Promise<ScanResult>
   cancelScan: () => Promise<void>
-  getCachedResults: () => Promise<{ projects: Project[]; lastScanTime: Date | null }>
+  getCachedResults: () => Promise<{ projects: Project[]; globalCaches: GlobalCache[]; lastScanTime: Date | null }>
   onScanProgress: (callback: (progress: ScanProgress) => void) => () => void
 
   // Cleaner
   cleanProjects: (options: CleanOptions) => Promise<CleanResult>
+  cleanGlobalCaches: (cacheIds: string[]) => Promise<GlobalCacheCleanResult>
   onCleanProgress: (callback: (progress: CleanProgress) => void) => () => void
 
   // Settings
@@ -113,9 +108,31 @@ interface ScanProgress {
   estimatedTimeRemaining?: number
 }
 
+interface GlobalCache {
+  id: string
+  category: 'package-manager' | 'dev-tool' | 'mobile-dev'
+  name: string
+  description: string
+  icon: string
+  path: string
+  size: number
+  alwaysSafe: boolean
+  cleanCommand?: string
+  cautionNote?: string
+}
+
+interface GlobalCacheCleanResult {
+  success: boolean
+  bytesFreed: number
+  pathsCleaned: string[]
+  errors: string[]
+}
+
 interface ScanResult {
   projects: Project[]
+  globalCaches: GlobalCache[]
   totalSize: number
+  globalCachesSize: number
   totalProjects: number
   scanDuration: number
   ecosystemSummary: EcosystemSummary[]

@@ -15,16 +15,19 @@ interface Statistics {
 interface HeroStatsProps {
   totalRecoverable: number
   projectCount: number
+  globalCachesSize?: number
+  globalCachesCount?: number
 }
 
-export function HeroStats({ totalRecoverable, projectCount }: HeroStatsProps) {
+export function HeroStats({ totalRecoverable, projectCount, globalCachesSize = 0, globalCachesCount = 0 }: HeroStatsProps) {
   const [stats, setStats] = useState<Statistics | null>(null)
 
   useEffect(() => {
     window.electronAPI.getStatistics().then(setStats)
   }, [])
 
-  const hasResults = totalRecoverable > 0
+  const combinedTotal = totalRecoverable + globalCachesSize
+  const hasResults = combinedTotal > 0
   const hasHistory = stats && stats.totalBytesFreed > 0
 
   return (
@@ -35,13 +38,19 @@ export function HeroStats({ totalRecoverable, projectCount }: HeroStatsProps) {
           <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.5, ease: 'easeOut' }}>
             <div className="text-7xl font-bold mb-2">
               <AnimatedNumber
-                value={totalRecoverable}
+                value={combinedTotal}
                 formatter={formatBytes}
                 className="bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent"
               />
             </div>
             <p className="text-text-secondary text-lg">
               of clutter across <span className="text-white font-medium">{projectCount}</span> projects
+              {globalCachesCount > 0 && (
+                <>
+                  {' '}
+                  and <span className="text-white font-medium">{globalCachesCount}</span> global caches
+                </>
+              )}
             </p>
           </motion.div>
 

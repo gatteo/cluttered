@@ -81,20 +81,20 @@
 @layer components {
   /* Glass card styles - blur only for hero/main cards */
   .glass-card {
-    @apply bg-surface-elevated/80 border border-white/[0.08] rounded-2xl;
+    @apply bg-surface-elevated/80 border border-white/[0.08] rounded-lg;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
   }
 
   /* Use this for hero sections where blur is acceptable */
   .glass-card-blur {
-    @apply bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] rounded-2xl;
+    @apply bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] rounded-lg;
     box-shadow:
       0 8px 32px rgba(0, 0, 0, 0.2),
       inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
 
   .glass-card-elevated {
-    @apply bg-white/[0.05] border border-white/[0.1] rounded-2xl;
+    @apply bg-white/[0.05] border border-white/[0.1] rounded-lg;
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
   }
 
@@ -147,6 +147,10 @@
     @apply bg-surface-elevated border border-white/10 rounded-lg shadow-lg;
   }
 
+  .tooltip-arrow {
+    border-color: transparent;
+    border-top-color: #1A1A24;
+  }
 
   /* Drag region for title bar */
   .app-drag-region {

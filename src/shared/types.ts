@@ -56,6 +56,23 @@ export interface Project {
   artifacts: ProjectArtifact[]
 }
 
+// ============ Global Cache Types ============
+
+export type GlobalCacheCategory = 'package-manager' | 'dev-tool' | 'mobile-dev'
+
+export interface GlobalCache {
+  id: string
+  category: GlobalCacheCategory
+  name: string
+  description: string
+  icon: string
+  path: string
+  size: number
+  alwaysSafe: boolean
+  cleanCommand?: string
+  cautionNote?: string
+}
+
 // ============ Scan Types ============
 
 export interface ScanOptions {
@@ -76,7 +93,9 @@ export interface ScanProgress {
 
 export interface ScanResult {
   projects: Project[]
+  globalCaches: GlobalCache[]
   totalSize: number
+  globalCachesSize: number
   totalProjects: number
   scanDuration: number
   ecosystemSummary: EcosystemSummary[]

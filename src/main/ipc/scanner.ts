@@ -47,12 +47,17 @@ export const scannerHandlers = {
       // Cache results
       console.log('[Scanner] Clearing cache and saving', result.projects.length, 'projects')
       scanCacheRepo.clear()
+      scanCacheRepo.clearGlobalCaches()
       if (result.projects.length > 0) {
         scanCacheRepo.saveProjects(result.projects)
         console.log(
           '[Scanner] Projects saved to cache. Sample IDs:',
           result.projects.slice(0, 3).map((p) => p.id)
         )
+      }
+      if (result.globalCaches.length > 0) {
+        scanCacheRepo.saveGlobalCaches(result.globalCaches)
+        console.log('[Scanner] Saved', result.globalCaches.length, 'global caches to cache')
       }
 
       // Verify cache was populated
@@ -72,10 +77,12 @@ export const scannerHandlers = {
 
   getCached() {
     const projects = scanCacheRepo.getAll()
+    const globalCaches = scanCacheRepo.getAllGlobalCaches()
     const lastScanTime = scanCacheRepo.getLastScanTime()
 
     return {
       projects,
+      globalCaches,
       lastScanTime,
     }
   },

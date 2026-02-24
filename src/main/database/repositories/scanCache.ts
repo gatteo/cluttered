@@ -1,5 +1,5 @@
 import { getDatabase } from '../index'
-import { Project, EcosystemId } from '../../../shared/types'
+import { Project, EcosystemId, GlobalCache, GlobalCacheCategory } from '../../../shared/types'
 
 interface ScanCacheRow {
   id: string
@@ -123,5 +123,88 @@ export const scanCacheRepo = {
     const db = getDatabase()
     const row = db.prepare('SELECT SUM(total_size) as total FROM scan_cache').get() as { total: number | null }
     return row.total ?? 0
+  },
+
+  // --- Global caches ---
+
+  saveGlobalCaches(caches: GlobalCache[]) {
+    const db = getDatabase()
+    const stmt = db.prepare(`
+      INSERT OR REPLACE INTO global_cache
+      (id, category, name, description, icon, path, size, always_safe, clean_command, caution_note, scanned_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `)
+
+    const now = Date.now()
+    const insertMany = db.transaction((caches: GlobalCache[]) => {
+      for (const c of caches) {
+        stmt.run(c.id, c.category, c.name, c.description, c.icon, c.path, c.size, c.alwaysSafe ? 1 : 0, c.cleanCommand ?? null, c.cautionNote ?? null, now)
+      }
+    })
+
+    insertMany(caches)
+  },
+
+  getAllGlobalCaches(): GlobalCache[] {
+    const db = getDatabase()
+    const rows = db.prepare('SELECT * FROM global_cache ORDER BY size DESC').all() as Array<{
+      id: string
+      category: string
+      name: string
+      description: string
+      icon: string
+      path: string
+      size: number
+      always_safe: number
+      clean_command: string | null
+      caution_note: string | null
+    }>
+    return rows.map((row) => ({
+      id: row.id,
+      category: row.category as GlobalCacheCategory,
+      name: row.name,
+      description: row.description,
+      icon: row.icon,
+      path: row.path,
+      size: row.size,
+      alwaysSafe: row.always_safe === 1,
+      cleanCommand: row.clean_command ?? undefined,
+      cautionNote: row.caution_note ?? undefined,
+    }))
+  },
+
+  getGlobalCachesByIds(ids: string[]): GlobalCache[] {
+    if (ids.length === 0) return []
+    const db = getDatabase()
+    const placeholders = ids.map(() => '?').join(',')
+    const rows = db.prepare(`SELECT * FROM global_cache WHERE id IN (${placeholders})`).all(...ids) as Array<{
+      id: string
+      category: string
+      name: string
+      description: string
+      icon: string
+      path: string
+      size: number
+      always_safe: number
+      clean_command: string | null
+      caution_note: string | null
+    }>
+    return rows.map((row) => ({
+      id: row.id,
+      category: row.category as GlobalCacheCategory,
+      name: row.name,
+      description: row.description,
+      icon: row.icon,
+      path: row.path,
+      size: row.size,
+      alwaysSafe: row.always_safe === 1,
+      cleanCommand: row.clean_command ?? undefined,
+      cautionNote: row.caution_note ?? undefined,
+    }))
+  },
+
+  clearGlobalCaches() {
+    const db = getDatabase()
+    db.prepare('DELETE FROM global_cache').run()
   },
 }

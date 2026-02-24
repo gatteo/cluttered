@@ -54,6 +54,7 @@ module.exports = {
       animation: {
         'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
         'sweep': 'sweep 2s ease-in-out infinite',
+        'shimmer-bar': 'shimmer-bar 1.5s linear infinite',
       },
       keyframes: {
         'pulse-glow': {
@@ -63,6 +64,10 @@ module.exports = {
         sweep: {
           '0%': { transform: 'translateX(-100%)' },
           '100%': { transform: 'translateX(100%)' },
+        },
+        'shimmer-bar': {
+          '0%': { backgroundPosition: '0% 0' },
+          '100%': { backgroundPosition: '-200% 0' },
         },
       },
     },

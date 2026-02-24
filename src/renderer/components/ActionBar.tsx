@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Trash2, Loader2, RefreshCw, Info } from 'lucide-react'
 import { useProjectStore } from '../store/projectStore'
@@ -18,9 +18,13 @@ export function ActionBar({ onScan, isScanning, hasResults }: ActionBarProps) {
   const { selectedIds } = useProjectStore()
   const { isCleaning, startClean, result: cleanResult } = useCleanStore()
   const scanResult = useScanStore((s) => s.result)
+  const selectedGlobalCacheIds = useScanStore((s) => s.selectedGlobalCacheIds)
+  const removeCleanedGlobalCaches = useScanStore((s) => s.removeCleanedGlobalCaches)
+  const deselectAllGlobalCaches = useScanStore((s) => s.deselectAllGlobalCaches)
   const loadQuota = useQuotaStore((s) => s.loadQuota)
   const [showInfo, setShowInfo] = useState(false)
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
+  const [isCleaningCaches, setIsCleaningCaches] = useState(false)
 
   // Check for quota error after cleaning
   useEffect(() => {
@@ -49,28 +53,61 @@ export function ActionBar({ onScan, isScanning, hasResults }: ActionBarProps) {
     }
   }, [scanResult?.projects])
 
-  // Calculate selected size
-  const selectedSize = useMemo(() => {
+  // Calculate selected project size
+  const selectedProjectSize = useMemo(() => {
     if (!scanResult?.projects || selectedIds.size === 0) return 0
     return scanResult.projects.filter((p) => selectedIds.has(p.id)).reduce((sum, p) => sum + p.totalSize, 0)
   }, [scanResult?.projects, selectedIds])
 
-  const hasSelection = selectedIds.size > 0
+  // Calculate selected global cache size
+  const selectedCacheSize = useMemo(() => {
+    if (!scanResult?.globalCaches || selectedGlobalCacheIds.size === 0) return 0
+    return scanResult.globalCaches.filter((c) => selectedGlobalCacheIds.has(c.id)).reduce((sum, c) => sum + c.size, 0)
+  }, [scanResult?.globalCaches, selectedGlobalCacheIds])
+
+  const totalSelectedSize = selectedProjectSize + selectedCacheSize
+  const hasProjectSelection = selectedIds.size > 0
+  const hasCacheSelection = selectedGlobalCacheIds.size > 0
+  const hasSelection = hasProjectSelection || hasCacheSelection
   const hasCleanable = cleanableProjects.length > 0
   const hasProtected = protectedCount > 0
+  const busyCleaning = isCleaning || isCleaningCaches
 
-  const handleClean = () => {
-    if (hasSelection) {
-      // Clean only selected projects
+  const cleanSelectedGlobalCaches = useCallback(async () => {
+    if (selectedGlobalCacheIds.size === 0) return
+    const cacheIds = Array.from(selectedGlobalCacheIds)
+
+    setIsCleaningCaches(true)
+    try {
+      const result = await window.electronAPI.cleanGlobalCaches(cacheIds)
+      if (result.pathsCleaned.length > 0) {
+        removeCleanedGlobalCaches(result.pathsCleaned)
+      }
+      deselectAllGlobalCaches()
+    } catch (error) {
+      console.error('Failed to clean global caches:', error)
+    } finally {
+      setIsCleaningCaches(false)
+    }
+  }, [selectedGlobalCacheIds, removeCleanedGlobalCaches, deselectAllGlobalCaches])
+
+  const handleClean = async () => {
+    // Clean selected global caches (if any)
+    if (hasCacheSelection) {
+      await cleanSelectedGlobalCaches()
+    }
+
+    // Clean projects
+    if (hasProjectSelection) {
       startClean()
-    } else {
-      // Clean all cleanable projects
+    } else if (!hasCacheSelection) {
+      // No specific selection at all — clean all cleanable projects
       startClean(cleanableProjects.map((p) => p.id))
     }
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-void via-void to-transparent pointer-events-none">
+    <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-void via-void to-transparent pointer-events-none z-20">
       <div className="flex flex-col items-center gap-3 pointer-events-auto">
         {/* Primary action button */}
         {!hasResults ? (
@@ -97,21 +134,16 @@ export function ActionBar({ onScan, isScanning, hasResults }: ActionBarProps) {
         ) : (
           // Has results - show Clean as primary
           <>
-            {/* Quota bar for free users */}
-            {/* <div className="w-full max-w-xs mb-2">
-              <QuotaBar />
-            </div> */}
-
             <motion.button
               className={`btn-primary px-4 py-2 rounded-xl font-medium flex items-center gap-2 text-lg ${
                 !hasCleanable && !hasSelection ? 'opacity-50 cursor-not-allowed' : ''
               }`}
               onClick={handleClean}
-              disabled={(!hasCleanable && !hasSelection) || isCleaning}
+              disabled={(!hasCleanable && !hasSelection) || busyCleaning}
               whileHover={hasCleanable || hasSelection ? { scale: 1.02 } : {}}
               whileTap={hasCleanable || hasSelection ? { scale: 0.98 } : {}}
             >
-              {isCleaning ? (
+              {busyCleaning ? (
                 <>
                   <Loader2 size={20} className="animate-spin" />
                   Cleaning...
@@ -122,7 +154,7 @@ export function ActionBar({ onScan, isScanning, hasResults }: ActionBarProps) {
                   {hasSelection ? (
                     <>
                       Clean Selected
-                      <span className="bg-white/20 px-2.5 py-0.5 rounded-full text-sm ml-1">{formatBytes(selectedSize)}</span>
+                      <span className="bg-white/20 px-2.5 py-0.5 rounded-full text-sm ml-1">{formatBytes(totalSelectedSize)}</span>
                     </>
                   ) : hasCleanable ? (
                     <>

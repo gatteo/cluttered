@@ -37,9 +37,24 @@ interface EcosystemSummary {
   cleanableSize: number
 }
 
+interface GlobalCache {
+  id: string
+  category: 'package-manager' | 'dev-tool' | 'mobile-dev'
+  name: string
+  description: string
+  icon: string
+  path: string
+  size: number
+  alwaysSafe: boolean
+  cleanCommand?: string
+  cautionNote?: string
+}
+
 interface ScanResult {
   projects: Project[]
+  globalCaches: GlobalCache[]
   totalSize: number
+  globalCachesSize: number
   totalProjects: number
   scanDuration: number
   ecosystemSummary: EcosystemSummary[]
@@ -52,11 +67,17 @@ interface ScanState {
   error: string | null
   lastScanTime: Date | null
 
+  // Global cache selection
+  selectedGlobalCacheIds: Set<string>
+
   // Actions
   startScan: () => Promise<void>
   cancelScan: () => void
   loadCachedResults: () => Promise<void>
   removeCleanedProjects: (projectIds: string[]) => void
+  removeCleanedGlobalCaches: (paths: string[]) => void
+  toggleGlobalCacheSelection: (id: string) => void
+  deselectAllGlobalCaches: () => void
   setProgress: (progress: ScanProgress) => void
   setResult: (result: ScanResult) => void
   setError: (error: string) => void
@@ -91,6 +112,7 @@ export const useScanStore = create<ScanState>((set, get) => ({
   result: null,
   error: null,
   lastScanTime: null,
+  selectedGlobalCacheIds: new Set<string>(),
 
   startScan: async () => {
     set({ isScanning: true, error: null, progress: null })
@@ -108,12 +130,15 @@ export const useScanStore = create<ScanState>((set, get) => ({
       }
 
       const projects = result.projects as unknown as Project[]
+      const globalCaches = (result.globalCaches ?? []) as unknown as GlobalCache[]
       const ecosystemSummary = buildEcosystemSummary(projects)
 
       set({
         result: {
           ...result,
           projects,
+          globalCaches,
+          globalCachesSize: result.globalCachesSize ?? 0,
           ecosystemSummary: ecosystemSummary.length > 0 ? ecosystemSummary : result.ecosystemSummary,
         },
         isScanning: false,
@@ -132,16 +157,22 @@ export const useScanStore = create<ScanState>((set, get) => ({
   },
 
   loadCachedResults: async () => {
+    // Skip if we already have a result from a live scan in this session
+    if (get().result) return
+
     try {
       const cached = await window.electronAPI.getCachedResults()
-      if (cached.projects.length > 0) {
+      if (cached.projects.length > 0 || (cached.globalCaches && cached.globalCaches.length > 0)) {
         const projects = cached.projects as unknown as Project[]
+        const globalCaches = ((cached.globalCaches as unknown as GlobalCache[]) ?? [])
         const ecosystemSummary = buildEcosystemSummary(projects)
 
         set({
           result: {
             projects,
+            globalCaches,
             totalSize: projects.reduce((sum, p) => sum + p.totalSize, 0),
+            globalCachesSize: globalCaches.reduce((sum, c) => sum + c.size, 0),
             totalProjects: projects.length,
             scanDuration: 0,
             ecosystemSummary,
@@ -169,6 +200,34 @@ export const useScanStore = create<ScanState>((set, get) => ({
         totalSize: remainingProjects.reduce((sum, p) => sum + p.totalSize, 0),
         totalProjects: remainingProjects.length,
         ecosystemSummary,
+      },
+    })
+  },
+
+  toggleGlobalCacheSelection: (id: string) => {
+    const selected = new Set(get().selectedGlobalCacheIds)
+    if (selected.has(id)) {
+      selected.delete(id)
+    } else {
+      selected.add(id)
+    }
+    set({ selectedGlobalCacheIds: selected })
+  },
+
+  deselectAllGlobalCaches: () => set({ selectedGlobalCacheIds: new Set() }),
+
+  removeCleanedGlobalCaches: (paths: string[]) => {
+    const { result } = get()
+    if (!result) return
+
+    const pathsToRemove = new Set(paths)
+    const remainingCaches = result.globalCaches.filter((c) => !pathsToRemove.has(c.path))
+
+    set({
+      result: {
+        ...result,
+        globalCaches: remainingCaches,
+        globalCachesSize: remainingCaches.reduce((sum, c) => sum + c.size, 0),
       },
     })
   },

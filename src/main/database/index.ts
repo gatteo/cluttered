@@ -126,6 +126,29 @@ function createTables(db: Database.Database) {
     )
   `)
 
+  // Global cache scan results
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS global_cache (
+      id TEXT PRIMARY KEY,
+      category TEXT NOT NULL,
+      name TEXT NOT NULL,
+      description TEXT NOT NULL,
+      icon TEXT NOT NULL,
+      path TEXT NOT NULL,
+      size INTEGER NOT NULL,
+      always_safe INTEGER NOT NULL DEFAULT 1,
+      clean_command TEXT,
+      caution_note TEXT,
+      scanned_at INTEGER NOT NULL
+    )
+  `)
+
+  // Migration: add caution_note column for existing installations
+  const hasCautionNote = db.prepare("SELECT COUNT(*) as cnt FROM pragma_table_info('global_cache') WHERE name='caution_note'").get() as { cnt: number }
+  if (hasCautionNote.cnt === 0) {
+    db.exec('ALTER TABLE global_cache ADD COLUMN caution_note TEXT')
+  }
+
   // Create indexes
   db.exec(`
     CREATE INDEX IF NOT EXISTS idx_scan_cache_ecosystem ON scan_cache(ecosystem);

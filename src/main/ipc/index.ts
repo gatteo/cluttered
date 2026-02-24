@@ -18,6 +18,9 @@ export function registerIPCHandlers(mainWindow: BrowserWindow) {
   // Cleaner
   ipcMain.handle('clean:start', (event, options) => cleanerHandlers.start(mainWindow, options))
   ipcMain.handle('clean:preview', (event, options) => cleanerHandlers.preview(options))
+  ipcMain.handle('clean:globalCaches', (event, cacheIds: string[]) =>
+    cleanerHandlers.cleanGlobalCaches(cacheIds)
+  )
 
   // Settings
   ipcMain.handle('settings:get', () => settingsHandlers.get())

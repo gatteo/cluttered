@@ -7,6 +7,7 @@ import { ecosystemRegistry } from '../ecosystems'
 import { settingsRepo } from '../database/repositories/settings'
 import { BaseService } from './base'
 import { sandboxService, isMASBuild } from './sandboxService'
+import { discoverGlobalCaches } from './globalCacheScanner'
 
 export class ScannerService extends BaseService {
   private isScanning = false
@@ -47,7 +48,7 @@ export class ScannerService extends BaseService {
         if (isMASBuild()) {
           // For MAS builds, we can't access home directory without user selection
           console.warn('[ScannerService] No scan paths provided for MAS build')
-          return this.buildResult([], Date.now() - startTime)
+          return this.buildResult([], [], Date.now() - startTime)
         }
         console.warn('[ScannerService] No scan paths provided, falling back to home directory')
         options.paths = [homedir()]
@@ -58,7 +59,7 @@ export class ScannerService extends BaseService {
         console.error('[ScannerService] ERROR: No ecosystems enabled!')
         console.error('[ScannerService] options.ecosystems =', options.ecosystems)
         // Return empty result
-        return this.buildResult([], Date.now() - startTime)
+        return this.buildResult([], [], Date.now() - startTime)
       }
 
       console.log('[ScannerService] Will detect these ecosystems:', options.ecosystems)
@@ -93,12 +94,20 @@ export class ScannerService extends BaseService {
         ecosystemCounts: this.getEcosystemCounts(),
       })
 
-      const analyzedProjects = await this.analyzeProjects(this.discoveredProjects)
-      console.log('[ScannerService] Analysis complete, analyzed', analyzedProjects.length, 'projects')
+      const [analyzedProjects, globalCaches] = await Promise.all([this.analyzeProjects(this.discoveredProjects), discoverGlobalCaches()])
+      console.log('[ScannerService] Analysis complete, analyzed', analyzedProjects.length, 'projects,', globalCaches.length, 'global caches')
 
       // Build result
-      const result = this.buildResult(analyzedProjects, Date.now() - startTime)
-      console.log('[ScannerService] Built result:', result.totalProjects, 'projects,', result.totalSize, 'bytes')
+      const result = this.buildResult(analyzedProjects, globalCaches, Date.now() - startTime)
+      console.log(
+        '[ScannerService] Built result:',
+        result.totalProjects,
+        'projects,',
+        result.totalSize,
+        'bytes,',
+        result.globalCachesSize,
+        'bytes global caches'
+      )
 
       this.sendProgress({
         phase: 'complete',
@@ -155,7 +164,7 @@ export class ScannerService extends BaseService {
       const ecosystem = await this.detectEcosystem(currentPath, options.ecosystems)
 
       if (ecosystem) {
-        // Found a project - don't recurse into it deeply
+        // Found a project - register it
         console.log('[ScannerService] Found project:', currentPath, 'ecosystem:', ecosystem)
         const project = await this.createProjectStub(currentPath, ecosystem)
         this.discoveredProjects.push(project)
@@ -167,27 +176,27 @@ export class ScannerService extends BaseService {
           totalSize: 0,
           ecosystemCounts: this.getEcosystemCounts(),
         })
-      } else {
-        // Not a project root - check subdirectories
-        try {
-          const entries = await readdir(currentPath, { withFileTypes: true })
+      }
 
-          for (const entry of entries) {
-            if (!entry.isDirectory()) continue
-            if (entry.name.startsWith('.')) continue // Skip hidden dirs
-            if (this.isSystemDirectory(entry.name)) continue
+      // Always check subdirectories (even for discovered projects, to find nested/monorepo projects)
+      try {
+        const entries = await readdir(currentPath, { withFileTypes: true })
 
-            const subPath = join(currentPath, entry.name)
+        for (const entry of entries) {
+          if (!entry.isDirectory()) continue
+          if (entry.name.startsWith('.')) continue // Skip hidden dirs
+          if (this.isSystemDirectory(entry.name)) continue
 
-            // Handle symlinks
-            if (entry.isSymbolicLink() && !options.followSymlinks) continue
+          const subPath = join(currentPath, entry.name)
 
-            queue.push(subPath)
-          }
-        } catch (error) {
-          // Log but continue - permission denied or other filesystem error
-          console.warn(`[ScannerService] Cannot read directory ${currentPath}:`, error)
+          // Handle symlinks
+          if (entry.isSymbolicLink() && !options.followSymlinks) continue
+
+          queue.push(subPath)
         }
+      } catch (error) {
+        // Log but continue - permission denied or other filesystem error
+        console.warn(`[ScannerService] Cannot read directory ${currentPath}:`, error)
       }
     }
 
@@ -323,18 +332,19 @@ export class ScannerService extends BaseService {
     return counts
   }
 
-  private buildResult(projects: Project[], duration: number): ScanResult {
+  private buildResult(projects: Project[], globalCaches: import('../../shared/types').GlobalCache[], duration: number): ScanResult {
     const ecosystemSummary = buildEcosystemSummary(projects)
 
     return {
       projects,
+      globalCaches,
       totalSize: projects.reduce((sum, p) => sum + p.totalSize, 0),
+      globalCachesSize: globalCaches.reduce((sum, c) => sum + c.size, 0),
       totalProjects: projects.length,
       scanDuration: duration,
       ecosystemSummary,
     }
   }
-
 
   private sendProgress(progress: ScanProgress) {
     this.sendToRenderer('scan:progress', progress)

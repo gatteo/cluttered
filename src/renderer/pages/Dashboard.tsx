@@ -82,14 +82,22 @@ export function Dashboard() {
               <ScanProgress progress={progress} onCancel={cancelScan} />
             ) : (
               <>
-                <HeroStats totalRecoverable={result?.totalSize ?? 0} projectCount={result?.totalProjects ?? 0} />
+                <HeroStats
+                  totalRecoverable={result?.totalSize ?? 0}
+                  projectCount={result?.totalProjects ?? 0}
+                  globalCachesSize={result?.globalCachesSize ?? 0}
+                  globalCachesCount={result?.globalCaches?.length ?? 0}
+                />
                 <DiskSpaceBar />
               </>
             )}
           </div>
 
-          {/* Ecosystem cards */}
-          <EcosystemGrid ecosystems={result?.ecosystemSummary ?? []} />
+          {/* Ecosystem cards + global caches card */}
+          <EcosystemGrid ecosystems={result?.ecosystemSummary ?? []} loading={isScanning} />
+
+          {/* Spacer for fixed ActionBar */}
+          <div className="h-32" />
         </div>
 
         {/* Action bar - hidden during scan */}

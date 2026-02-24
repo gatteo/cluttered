@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { Dashboard } from './pages/Dashboard'
 import { EcosystemDetail } from './pages/EcosystemDetail'
+import { GlobalCachesDetail } from './pages/GlobalCachesDetail'
 import { Settings } from './pages/Settings'
 import { CleaningOverlay } from './components/CleaningOverlay'
 import { ErrorBoundary } from './components/ErrorBoundary'
@@ -30,6 +31,12 @@ function AppContent() {
         {currentView === 'ecosystem' && selectedEcosystem && (
           <motion.div key="ecosystem" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}>
             <EcosystemDetail ecosystem={selectedEcosystem} />
+          </motion.div>
+        )}
+
+        {currentView === 'globalCaches' && (
+          <motion.div key="globalCaches" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}>
+            <GlobalCachesDetail />
           </motion.div>
         )}
 

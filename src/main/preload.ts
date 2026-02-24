@@ -22,6 +22,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   // Cleaner
   cleanProjects: (options: CleanOptions) => ipcRenderer.invoke('clean:start', options),
+  cleanGlobalCaches: (cacheIds: string[]) => ipcRenderer.invoke('clean:globalCaches', cacheIds),
   onCleanProgress: (callback: (progress: CleanProgress) => void) => {
     const subscription = (_event: IpcRendererEvent, data: CleanProgress) => callback(data)
     ipcRenderer.on('clean:progress', subscription)

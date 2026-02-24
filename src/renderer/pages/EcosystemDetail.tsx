@@ -119,21 +119,44 @@ export function EcosystemDetail({ ecosystem }: EcosystemDetailProps) {
   const [showEmpty, setShowEmpty] = useState(false)
   const [statusFilters, setStatusFilters] = useState<Set<ProjectStatus>>(new Set(allStatuses))
 
+  // Sort state
+  type SortField = 'size' | 'lastModified' | 'name'
+  const [sortBy, setSortBy] = useState<SortField>('size')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
+
   // Protected project confirmation
   const [pendingProtectedProject, setPendingProtectedProject] = useState<Project | null>(null)
 
   const config = ecosystemConfigs[ecosystem]
   const allProjects = result?.projects.filter((p) => p.ecosystem === ecosystem) ?? []
 
-  // Apply filters
+  // Apply filters and sorting
   const filteredProjects = useMemo(() => {
-    return allProjects.filter((p) => {
+    const filtered = allProjects.filter((p) => {
       if (!showProtected && p.isProtected) return false
       if (!showEmpty && p.totalSize === 0) return false
       if (!statusFilters.has(p.status)) return false
       return true
     })
-  }, [allProjects, showProtected, showEmpty, statusFilters])
+
+    filtered.sort((a, b) => {
+      let cmp = 0
+      switch (sortBy) {
+        case 'size':
+          cmp = a.totalSize - b.totalSize
+          break
+        case 'lastModified':
+          cmp = new Date(a.lastModified).getTime() - new Date(b.lastModified).getTime()
+          break
+        case 'name':
+          cmp = a.name.localeCompare(b.name)
+          break
+      }
+      return sortOrder === 'asc' ? cmp : -cmp
+    })
+
+    return filtered
+  }, [allProjects, showProtected, showEmpty, statusFilters, sortBy, sortOrder])
 
   // Calculate totals
   const totalSize = allProjects.reduce((sum, p) => sum + p.totalSize, 0)
@@ -288,6 +311,38 @@ export function EcosystemDetail({ ecosystem }: EcosystemDetailProps) {
                 Empty (0 B)
               </button>
             </Tooltip>
+          </div>
+
+          <div className="w-px h-4 bg-white/10" />
+
+          {/* Sort controls */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-text-muted">Sort:</span>
+            {(
+              [
+                ['size', 'Size'],
+                ['lastModified', 'Last Active'],
+                ['name', 'Name'],
+              ] as const
+            ).map(([field, label]) => (
+              <button
+                key={field}
+                onClick={() => {
+                  if (sortBy === field) {
+                    setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')
+                  } else {
+                    setSortBy(field)
+                    setSortOrder(field === 'name' ? 'asc' : 'desc')
+                  }
+                }}
+                className={`px-2.5 py-1 rounded-full text-xs transition-all flex items-center gap-1 ${
+                  sortBy === field ? 'bg-accent-purple/20 text-accent-purple' : 'bg-white/5 text-text-muted hover:text-white'
+                }`}
+              >
+                {label}
+                {sortBy === field && <span className="text-[10px]">{sortOrder === 'desc' ? '↓' : '↑'}</span>}
+              </button>
+            ))}
           </div>
 
           {/* Reset filters */}
